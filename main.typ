@@ -27,11 +27,11 @@
 
 #include "content/introduction.typ"
 #include "content/SMHD.typ"
-#include "content/state.typ"
-#include "content/implementation.typ"
-#include "content/benchmarks.typ"
-#include "content/conclusion.typ"
-#include "content/outlook.typ"
+//#include "content/state.typ"
+//#include "content/implementation.typ"
+//#include "content/benchmarks.typ"
+//#include "content/conclusion.typ"
+//#include "content/outlook.typ"
 
 #include "glossary.typ"
 

@@ -190,7 +190,7 @@ If $s$ is even, we need to move our quantizer $s/2$ times some distance to the r
 We can define the ideal position for the quantizer bounds based on its corresponding metric as centered around the center of the related metric.
 
 We can find these new bounds graphically as depicted in @fig:smhd_find_bound_graph. We first determine the x-values of the centers of a metric (here M1, as shown with the arrows). We can then place the quantizer steps with step size $Delta$ (@eq:delta) evenly spaced around these points.
-
+With these new points for the vertical steps of $cal(Q)$, we can draw the new quantizer for the first metric in @fig:smhd_found_bound_graph.
 
 
 #grid(
@@ -205,5 +205,14 @@ We can find these new bounds graphically as depicted in @fig:smhd_find_bound_gra
   #figure(
     include("../graphics/quantizers/s-metric/2_2_found_quantizer1.typ"),
     caption: [Quantizer for the first metric]
-  )]]
+  )<fig:smhd_found_bound_graph>]]
 )
+
+As for metric 2, we can apply the same strategy and find the points for the vertical steps to be at $1/16, 5/16, 9/16$ and $13/16$. This quantizer can be visualized together with the first metric quantizer in @fig:smhd_2_2_reconstruction, forming the complete quantizer for the reconstruction phase of a 2-bit 2-metric configuration $cal(R)(2,2,tilde(x))$.
+
+#figure(
+  include("../graphics/quantizers/s-metric/2_2_reconstruction.typ"),
+  caption: [2-bit 2-metric reconstruction quantizer]
+)<fig:smhd_2_2_reconstruction>
+
+

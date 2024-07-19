@@ -46,7 +46,8 @@
       x: 2cm,
     ),
     header: [],
-    footer: []
+    footer: [],
+    //numbering: "1"
   )
 
   set par(justify: true)
@@ -89,9 +90,34 @@
     ]
   })
 
+  
+  
+  set page(numbering: none)
+
   contents_page()
+  
+  set page(numbering: none)
 
   pagebreak()
+
+  set page(
+    paper: "a4",
+    margin: (
+      top: 3cm,
+      bottom: 3cm,
+      x: 2cm,
+    ),
+    header: [],
+    footer: none,
+  )
+
+  set page(footer: locate(
+  loc => if calc.even(loc.page()) {
+    align(right, counter(page).display("1"));
+  } else {
+    align(left, counter(page).display("1"));
+  }
+  ))
 
   doc
 }

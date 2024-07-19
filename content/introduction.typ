@@ -37,6 +37,6 @@ This transformation can be performed using the function $xi = tilde(x)$. The key
 Considering a normal distribution, the CDF is defined as 
 $ xi(frac(x - mu, sigma)) = frac(1, 2)[1 + \e\rf(frac(x - mu, sigma sqrt(2)))] $
 
-=== ECDF
+==== ECDF
 
 The eCDF is constructed through sorting the empirical measurements of a distribution @dekking2005modern. Although less accurate, this method allows a more simple and less computationally complex way to transform real valued measurements into the Tilde-Domain. We will mainly use the eCDF in @chap:smhd because of the difficulty of finding an analytical description for the CDF of a Gaussian-Mixture.

@@ -172,3 +172,38 @@ Each measurement will be quantized with out quantizer $cal(E)$, returning a tupl
 $ K_i = cal(E)(s, m tilde(x_i)) = (k, h)_i $ <eq:smhd_quant>
 
 Performing the operation of @eq:smhd_quant for our whole set of measurements will yield a vector of tuples $bold(K)$.
+#pagebreak()
+=== Reconstruction
+
+We already demonstrated the basic principle of the reconstruction phase in section @sect:tmhd, more specifically with @fig:tmhd_example_enroll and @fig:tmhd_example_reconstruct, which show the advantage of using more than one quantizer during reconstruction. 
+
+We will call our repeated measurement of $tilde(x)$ that is subject to a certain error $tilde(x^*)$.
+To perform reconstruction with $tilde(x^*)$, we will first need to find all $s$ quantizers for which we generated the helper data in the previous step. 
+
+We have to distinguish two different cases for the value of $s$: 
+- $s$ is odd 
+- $s$ is even
+
+==== Even number of metrics 
+
+If $s$ is even, we need to move our quantizer $s/2$ times some distance to the right and $s/2$ times some distance to the left.
+We can define the ideal position for the quantizer bounds based on its corresponding metric as centered around the center of the related metric.
+
+We can find these new bounds graphically as depicted in @fig:smhd_find_bound_graph. We first determine the x-values of the centers of a metric (here M1, as shown with the arrows). We can then place the quantizer steps with step size $Delta$ (@eq:delta) evenly spaced around these points.
+
+
+
+#grid(
+  columns: (1fr, 0.1fr, 1fr),
+  [#scale(x: 70%, y: 70%)[
+  #figure(
+    include("../graphics/quantizers/s-metric/2_2_find_quantizer.typ"),
+    caption: [Ideal centers and bounds for the M1 quantizer]
+  )<fig:smhd_find_bound_graph>]],
+  [#align(center)[#align(horizon)[#text(25pt)[$arrow.r.double$]]]],
+  [#scale(x: 70%, y: 70%)[
+  #figure(
+    include("../graphics/quantizers/s-metric/2_2_found_quantizer1.typ"),
+    caption: [Quantizer for the first metric]
+  )]]
+)

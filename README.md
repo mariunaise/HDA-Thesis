@@ -1,1 +1,1 @@
-# MQT QCEC Diff Thesis
+# Thesis

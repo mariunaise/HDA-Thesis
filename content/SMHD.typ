@@ -210,9 +210,39 @@ With these new points for the vertical steps of $cal(Q)$, we can draw the new qu
 
 As for metric 2, we can apply the same strategy and find the points for the vertical steps to be at $1/16, 5/16, 9/16$ and $13/16$. This quantizer can be visualized together with the first metric quantizer in @fig:smhd_2_2_reconstruction, forming the complete quantizer for the reconstruction phase of a 2-bit 2-metric configuration $cal(R)(2,2,tilde(x))$.
 
+#grid(
+  columns: (1fr, 1fr), 
+  [
+    #scale(x: 80%, y: 80%)[
+      #figure(
+        include("../graphics/quantizers/s-metric/2_2_reconstruction.typ"),
+        caption: [2-bit 2-metric reconstruction quantizer]
+      )<fig:smhd_2_2_reconstruction> ]
+  ],
+  [
+    #scale(x: 80%, y: 80%)[
+      #figure(
+        include("../graphics/quantizers/s-metric/3_2_reconstruction.typ"),
+        caption: [2-bit 3-metric reconstruction quantizer],
+      )<fig:smhd_3_2_reconstruction> ]
+  ]
+)
+
+Analytically, the offset we are applying to $cal(E)(2, 2, tilde(x))$ can be defined as
+
+$ phi = lr(frac(1, 2^n dot s)mid(|))_(n=2, s=2) = 1 / 8 $<eq:offset>
+
+This is also shown in @fig:smhd_2_2_reconstruction, as our quantizer curve is moved $1/8$ to the left and the right. 
+
+==== Odd number of metrics
+
+If a odd number of metrics is given, the offset can still be calculated using @eq:offset. Additionally, we will keep the original quantizer used during enrollment. 
+
 #figure(
-  include("../graphics/quantizers/s-metric/2_2_reconstruction.typ"),
-  caption: [2-bit 2-metric reconstruction quantizer]
-)<fig:smhd_2_2_reconstruction>
+  kind: "algorithm",
+  supplement: [Algorithm], 
 
+  include("../pseudocode/find_quantizers.typ")
+)<alg:fancy>
 
+As shown in @alg:fancy

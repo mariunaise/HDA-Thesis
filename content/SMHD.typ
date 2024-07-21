@@ -230,14 +230,31 @@ As for metric 2, we can apply the same strategy and find the points for the vert
 
 Analytically, the offset we are applying to $cal(E)(2, 2, tilde(x))$ can be defined as
 
-$ phi = lr(frac(1, 2^n dot s)mid(|))_(n=2, s=2) = 1 / 8 $<eq:offset>
+$ phi = lr(frac(1, 2^n dot s dot 2)mid(|))_(n=2, s=2) = 1 / 16 $<eq:offset>
 
-This is also shown in @fig:smhd_2_2_reconstruction, as our quantizer curve is moved $1/8$ to the left and the right. 
+This is also shown in @fig:smhd_2_2_reconstruction, as our quantizer curve is moved $1/16$ to the left and the right. 
 
 ==== Odd number of metrics
 
-If a odd number of metrics is given, the offset can still be calculated using @eq:offset. Additionally, we will keep the original quantizer used during enrollment. 
+If a odd number of metrics is given, the offset can still be calculated using @eq:offset. Additionally, we will keep the original quantizer used during enrollment (@fig:smhd_3_2_reconstruction).
 
+Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their respective values of @eq:offset, we can observe, that the offset $phi$ gets smaller the more metrics we use. 
+]
+
+
+#figure(
+  table(
+    columns: (11),
+    inset: 7pt,
+    align: center + horizon,
+    [$m$], 
+    [1],[2],[3],[4],[5],[6],[7],[8],[9],[10],
+    [$phi$],[$1/8$],table.cell(fill: gray)[$1/16$], [$1/24$], table.cell(fill:gray)[$1/32$], [$1/40$], table.cell(fill:gray)[$1/48$], [$1/56$], table.cell(fill:gray)[$1/64$],  [$1/72$], table.cell(fill:gray)[$1/80$]
+  ),
+  caption: [Offset values for 2-bit configurations]
+)<tab:offsets>
+
+Before we can go deeper into the properties of the offset value $phi$, we will introduce a way to programmatically find the offset values for all s quantizers.
 #figure(
   kind: "algorithm",
   supplement: [Algorithm], 

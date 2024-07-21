@@ -19,9 +19,9 @@
     x-max: 1,
     y-min: 0,
     y-max: 1,{
-    plot.add(((0, 1/4), (2/12, 1/4), (5/12, 2/4), (8/12, 3/4), (11/12, 1), (11/12, 1/4), (1, 1/4)),line: "vh", style: line_style, label: [Metric 1])
+    plot.add(((0, 1/4), (5/24, 1/4), (11/24, 2/4), (17/24, 3/4), (23/24, 1), (23/24, 1/4), (1, 1/4)),line: "vh", style: line_style, label: [Metric 1])
     plot.add(((0,1/4), (1/4,1/4), (2/4,2/4), (3/4,3/4), (4/4, 4/4)), line: "vh", style: line_style2, label: [Metric 2])
-    plot.add(((0, 1),(1/12, 1), (1/12, 1/4), (4/12, 1/4), (4/12, 2/4), (7/12, 3/4), (10/12, 1), (1, 1)), line: "hv", style: line_style3, label: [Metric 3])
+    plot.add(((0, 1),(1/24, 1), (1/24, 1/4), (7/24, 1/4), (7/24, 2/4), (13/24, 3/4), (19/24, 1), (1, 1)), line: "hv", style: line_style3, label: [Metric 3])
     plot.add-hline(1/4, 2/4, 3/4, 1, style: dashed)
     plot.add-vline(1/4, 2/4, 3/4, 1, style: dashed)
   })

@@ -18,8 +18,8 @@
     x-max: 1,
     y-min: 0,
     y-max: 1,{
-    plot.add(((0,1/4), (1/8,1/4), (3/8,2/4), (5/8,3/4), (7/8, 1), (7/8, 1/4), (1, 1/4)), line: "vh", style: line_style, label: [Metric 1])
-    plot.add(((0, 1), (1/8, 1), (1/8, 1/4), (3/8, 1/4), (5/8, 2/4), (7/8, 3/4), (7/8, 1), (1, 1)),line: "vh", style: line_style2, label: [Metric 2])
+    plot.add(((0,1/4), (3/16,1/4), (7/16,2/4), (11/16,3/4), (15/16, 1), (15/16, 1/4), (1, 1/4)), line: "vh", style: line_style, label: [Metric 1])
+    plot.add(((0, 1), (1/16, 1), (1/16, 1/4), (5/16, 1/4), (9/16, 2/4), (13/16, 3/4), (13/16, 1), (1, 1)),line: "vh", style: line_style2, label: [Metric 2])
     plot.add-hline(1/4, 2/4, 3/4, 1, style: dashed)
     plot.add-vline(1/4, 2/4, 3/4, 1, style: dashed)
   })

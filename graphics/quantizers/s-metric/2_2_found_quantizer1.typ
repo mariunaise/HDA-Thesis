@@ -9,14 +9,14 @@
     y-label: $cal(Q)(2, 2, tilde(x))$,
     x-label: $tilde(x)$,
     y-tick-step: none,
-    y-ticks: ((3/16, [00]), (7/16, [01]), (11/16, [10]), (15/16, [11])),
+    y-ticks: ((1/4, [00]), (2/4, [01]), (3/4, [10]), (4/4, [11])),
     axis-style: "left",
     x-min: 0,
     x-max: 1,
     y-min: 0,
     y-max: 1,{
-    plot.add(((0,3/16), (3/16,3/16), (7/16,7/16), (11/16,11/16), (15/16, 15/16), (15/16, 3/16), (1, 3/16)), line: "vh", style: line_style)
-    plot.add-hline(3/16, 7/16, 11/16, 15/16, style: dashed)
+    plot.add(((0,1/4), (3/16,1/4), (7/16,2/4), (11/16,3/4), (15/16, 4/4), (15/16, 1/4), (1, 1/4)), line: "vh", style: line_style)
+    plot.add-hline(1/4, 2/4, 3/4, 1, style: dashed)
     plot.add-vline(3/16, 7/16, 11/16, 15/16, style: dashed)
   })
 })

@@ -295,10 +295,27 @@ Here, we multiply @eq:offset with the maximum offsetting index $i_"max" = s/2$.
 
 Now, if we want to find the maximum offset for a odd number of metrics, we need to modify @eq:max_offset_even, more specifically its numerator. 
 We know, that we need to keep the original quantizer for a odd number of metrics, besides that, the method stays the same. 
-For that reason, we will decrease the parameter $m$ by $1$: 
+For that reason, we will decrease the parameter $m$ by $1$, that way we will still perform a division without remainder:
+
 $
-phi_"max_odd" &= frac(frac(m-1, 2), 2^n dot m dot 2)\
+phi_"max,odd" &= frac(frac(m-1, 2), 2^n dot m dot 2)\
 &= lr(frac(m-1, 2^n dot m dot 4)mid(|))_(n=2, m=3) = 1/24
 $
 
+It is important to note, that $phi_"max,odd"$, unlike $phi_"max,even"$ is dependent on the parameter $m$.
+
+#figure(
+  table(
+    columns: (5),
+    align: center + horizon, 
+    inset: 7pt,
+    [*m*],[3],[5],[7],[9],
+    [$bold(phi_"max,odd")$],[$1/24$],[$1/20$],[$3/56$],[$1/18$]
+  ),
+)<tb:>
+
+$
+lim_(m arrow.r infinity) phi_"max,odd" &= frac(m-1, 2^n dot m dot 4)\ 
+&= frac(1, 2^n dot 4) = phi_"max,even" 
+$
 

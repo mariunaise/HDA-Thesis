@@ -239,7 +239,6 @@ This is also shown in @fig:smhd_2_2_reconstruction, as our quantizer curve is mo
 If a odd number of metrics is given, the offset can still be calculated using @eq:offset. Additionally, we will keep the original quantizer used during enrollment (@fig:smhd_3_2_reconstruction).
 
 Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their respective values of @eq:offset, we can observe, that the offset $phi$ gets smaller the more metrics we use. 
-]
 
 
 #figure(
@@ -254,12 +253,52 @@ Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their r
   caption: [Offset values for 2-bit configurations]
 )<tab:offsets>
 
-Before we can go deeper into the properties of the offset value $phi$, we will introduce a way to programmatically find the offset values for all s quantizers.
-#figure(
-  kind: "algorithm",
-  supplement: [Algorithm], 
+Lets look deeper into the properties of the offset value $phi$.
+As previously stated, we will need to move the enrollment quantizer $s/2$ times to the left and $s/2$ times to the right. 
+For example, setting parameter $s$ to $4$ means we will need to need to move the enrollment quantizer $lr(s/2 mid(|))_(s=4) = 2$ times to the left and right. 
+As we can see in @fig:4_2_offsets, $phi$ for the indices $i = plus.minus 2$ are identical to the offsets of a 2-bit 2-metric configuration.
+In fact, this property carries on for higher even numbers of metrics.
 
-  include("../pseudocode/find_quantizers.typ")
-)<alg:fancy>
+#grid(
+  columns: (1fr, 1fr),
+  [#figure(
+    table(
+      columns: (5),
+      inset: 7pt,
+      align: center + horizon,
+      [$bold(i)$], [$-2$], [$-1$], [$1$], [$2$],
+      [*Metric*], [M1], [M2], [M3], [M4], 
+      [$bold(phi)$], [$-frac(1, 16)$], [$-frac(1, 32)$], [$frac(1, 32)$], [$frac(1, 16)$]
+    ),
+    caption: [2-bit 4-metric offsets]
+  )<fig:4_2_offsets>
+],
+  [#figure(
+    table(
+      columns: (7),
+      align: center + horizon,
+      inset: 7pt,
+      [$bold(i)$], [$-3$], [$-2$], [$-1$], [$1$], [$2$], [$3$],
+      [*Metric*], [M1], [M2], [M3], [M4], [M5], [M6],
+      [$bold(phi)$], [$-frac(1, 16)$], [$-frac(1, 24)$], [$-frac(1, 48)$], [$frac(1, 48)$], [$frac(1, 24)$], [$frac(1, 16)$]
+    ),
+    caption: [2-bit 6-metric offsets]
+  )<fig:6_2_offsets>
+]
+)
 
-As shown in @alg:fancy
+At $m=6$ metrics, the biggest offset we encounter is $phi = 1/16$ at $i = plus.minus 3$.\
+In conclusion, the maximum offset for a 2-bit configuration $phi$ is $1/16$ and we will introduce smaller offsets in between if we use a higher even number of metrics. More formally, we can define the maximum offset for an even number of metrics as follows: 
+$ phi_("max,even") = frac(frac(m,2), 2^n dot m dot 2) = frac(1, 2^n dot 4) $<eq:max_offset_even>
+
+Here, we multiply @eq:offset with the maximum offsetting index $i_"max" = s/2$.
+
+Now, if we want to find the maximum offset for a odd number of metrics, we need to modify @eq:max_offset_even, more specifically its numerator. 
+We know, that we need to keep the original quantizer for a odd number of metrics, besides that, the method stays the same. 
+For that reason, we will decrease the parameter $m$ by $1$: 
+$
+phi_"max_odd" &= frac(frac(m-1, 2), 2^n dot m dot 2)\
+&= lr(frac(m-1, 2^n dot m dot 4)mid(|))_(n=2, m=3) = 1/24
+$
+
+

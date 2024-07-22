@@ -36,7 +36,7 @@
 
   pagebreak()
   
-  set math.equation(numbering: "(1)")
+  //set math.equation(numbering: "(1)")
 
   set page(
     paper: "a4",

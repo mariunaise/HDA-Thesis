@@ -6,6 +6,10 @@
 #import "@preview/tablex:0.0.8"
 #import "@preview/unify:0.6.0"
 #import "@preview/quill:0.3.0"
+#import "@preview/equate:0.2.0": equate
+
+#show: equate.with(breakable: true, sub-numbering: true)
+#set math.equation(numbering: "(1.1)")
 
 #import "template/conf.typ": conf
 

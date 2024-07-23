@@ -8,7 +8,7 @@ Each of these metrics correspond to a quantizer with different bounds to lower t
 === Distribution Independency <sect:dist_independency>
 
 The publications for the Two-Metric approach @tmhd1 and @tmhd2, as well as the generalized S-Metric approach @smhd make the assumption, that the PUF readout is "zero-mean Gaussian distributed" @smhd. 
-We propose, that a Gaussian distributed input für S-Metric quantization is not required for the operation of this quantizing algorithm. 
+We propose, that a Gaussian distributed input for S-Metric quantization is not required for the operation of this quantizing algorithm. 
 Instead, any distribution can be used for input values given, that a CDF exists for that distribution and its parameters are known. 
 As already mentioned in @tilde-domain, this transformation will result in uniformly distributed values, where equi-probable areas in the real domain correspond to equi-distant areas in the Tilde-Domain. 
 Contrary to @tmhd1, @tmhd2 and @smhd, which display relevant areas as equi-probable in a normal distribution, we will use equi-distant areas in a uniform distribution for better understandability. 
@@ -19,10 +19,10 @@ It has to be mentioned, that instead of transforming all values of the PUF reado
 The most simple form of a metric-based @hda is the Two-Metric Helper Data Method, since the quantization only yields symbols of 1-bit width and uses the lead amount of metrics possible. 
 Publications @tmhd1 and @tmhd2 find all the relevant bounds for the enrollment and reconstruction phases under the assumption that the PUF readout is Gaussian distributed. 
 Because this approach is static, meaning the parameters for symbol width and number of metrics always stays the same, it is easier to calculate the bounds for 8 equi-probable areas with a standard deviation of $sigma = 1$ first and then multiplying them with the estimated standard deviation of the PUF readout. 
-This is done by fining two bounds $a$ and $b$, that 
+This is done by finding two bounds $a$ and $b$, that 
 $ integral_a^b f_X(x) \dx = 1/8 $
-This operation yields 9 bounds defining these areas $-\T1$, $-a$, $-\T2$, $0$, $\T2$, $a$, $\T1$ and $plus.minus infinity$
-During the enrollment phase, we will $plus.minus a$ as our quantizing bounds, retuning $0$ if the absolute values is smaller than $a$ and $1$ otherwise.
+This operation yields 9 bounds defining these areas $-\T1$, $-a$, $-\T2$, $0$, $\T2$, $a$, $\T1$ and $plus.minus infinity$.
+During the enrollment phase, we will use $plus.minus a$ as our quantizing bounds, retuning $0$ if the absolute value is smaller than $a$ and $1$ otherwise.
 The corresponding metric is chosen based on the following conditions: 
 
 $ M = cases(
@@ -100,9 +100,9 @@ The generalization consists of two components:
 - *Higher order bit quantization* \
   We can introduce more steps to our quantizer and use them to extract more than one bit out of our PUF readout.
 - *Using more than two metrics* \
-  Instead of splitting each quantizer steam into only two equi-probable parts, we can increase the number of metrics at the cost of generating more helper data.
+  Instead of splitting each quantizer into only two equi-probable parts, we can increase the number of metrics at the cost of generating more helper data.
 
-== Implementation
+== Implementation<sect:smhd_implementation>
 
 We will now propose a specific implementation of the S-Metric Helper Data Method. \
 As shown in @sect:dist_independency, we can use a CDF to transform our random distributed variable $X$ into the Tilde-Domain: $tilde(X)$.
@@ -135,18 +135,18 @@ Right now, this quantizer wouldn't help us generating any helper data.
 To achieve that, we will need to divide a symbol step - one, that returns the corresponding quantized symbol - into multiple sub-steps.
 More specifically, we will define the amount of metrics we want to use with the parameter $s$. Using $s$, we can define the step size $Delta_s$ as the division of $Delta$ by $s$:
 
-$ Delta_s = frac(Delta, s) = frac(frac(1, 2^m), s) = frac(1, 2^m * s) $<eq:delta_s>
+$ Delta_s = frac(Delta, s) = frac(frac(1, 2^m), s) = frac(1, 2^m dot s) $<eq:delta_s>
 
 After this definition, we need to make an adjustment to our previously defined quantizer function, because we cannot simply return the quantized value based on a quantizer with step size $Delta_s$. 
 That would just increase the amounts of bits we will extract out of one measurement. 
 Instead, we will need to return a tuple, consisting of the quantized symbol and the metric ascertained that we will save as helper data for later. 
 
-Going on in our example, we could choose the amount of our metrics to be 2. According to @eq:delta_s, we would then half out step size: 
+Going on in our example, we could choose the amount of our metrics to be 2. According to @eq:delta_s, we would then half our step size: 
 
-$ Delta'_s = lr(frac(Delta', s)mid(|))_(s=2) = frac(1, 4 * 2) = frac(1, 8) $
+$ Delta'_s = lr(frac(Delta', s)mid(|))_(s=2) = frac(1, 4 dot 2) = frac(1, 8) $
 
 
-This means, we can update out quantizer function with the new step size $Delta'_s = frac(1, 8)$ and redefining its output as a tuple consisting of bit value and helper data. 
+This means, we can update our quantizer function with the new step size $Delta'_s = frac(1, 8)$ and redefining its output as a tuple consisting of bit value and helper data. 
 
 We can visualize the quantizer that we will use during the enrollment phase of a 2-bit 2-metric configuration as depicted in @fig:smhd_2_2_en.
 
@@ -183,8 +183,6 @@ To perform reconstruction with $tilde(x^*)$, we will first need to find all $s$ 
 We have to distinguish two different cases for the value of $s$: 
 - $s$ is odd 
 - $s$ is even
-
-==== Even number of metrics 
 
 If $s$ is even, we need to move our quantizer $s/2$ times some distance to the right and $s/2$ times some distance to the left.
 We can define the ideal position for the quantizer bounds based on its corresponding metric as centered around the center of the related metric.
@@ -234,8 +232,6 @@ $ phi = lr(frac(1, 2^n dot s dot 2)mid(|))_(n=2, s=2) = 1 / 16 $<eq:offset>
 
 This is also shown in @fig:smhd_2_2_reconstruction, as our quantizer curve is moved $1/16$ to the left and the right. 
 
-==== Odd number of metrics
-
 If a odd number of metrics is given, the offset can still be calculated using @eq:offset. Additionally, we will keep the original quantizer used during enrollment (@fig:smhd_3_2_reconstruction).
 
 Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their respective values of @eq:offset, we can observe, that the offset $phi$ gets smaller the more metrics we use. 
@@ -253,9 +249,20 @@ Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their r
   caption: [Offset values for 2-bit configurations]
 )<tab:offsets>
 
+To find all offsets for values of $s > 3$, we can use @alg:find_offsets.
+For application, we calculate $phi$ based on the metric using @eq:offset. The resulting list of offsets is correctly ordered and can be mapped to the corresponding metrics in ascending order as we will show in @fig:4_2_offsets and @fig:6_2_offsets.
+
+#figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+  include("../pseudocode/offsets.typ")
+)<alg:find_offsets>
+
+==== Offset properties<par:offset_props>
+
 Lets look deeper into the properties of the offset value $phi$.
 As previously stated, we will need to move the enrollment quantizer $s/2$ times to the left and $s/2$ times to the right. 
-For example, setting parameter $s$ to $4$ means we will need to need to move the enrollment quantizer $lr(s/2 mid(|))_(s=4) = 2$ times to the left and right. 
+For example, setting parameter $s$ to $4$ means we will need to move the enrollment quantizer $lr(s/2 mid(|))_(s=4) = 2$ times to the left and right. 
 As we can see in @fig:4_2_offsets, $phi$ for the indices $i = plus.minus 2$ are identical to the offsets of a 2-bit 2-metric configuration.
 In fact, this property carries on for higher even numbers of metrics.
 
@@ -287,35 +294,64 @@ In fact, this property carries on for higher even numbers of metrics.
 ]
 )
 
-At $m=6$ metrics, the biggest offset we encounter is $phi = 1/16$ at $i = plus.minus 3$.\
+At $s=6$ metrics, the biggest offset we encounter is $phi = 1/16$ at $i = plus.minus 3$.\
 In conclusion, the maximum offset for a 2-bit configuration $phi$ is $1/16$ and we will introduce smaller offsets in between if we use a higher even number of metrics. More formally, we can define the maximum offset for an even number of metrics as follows: 
-$ phi_("max,even") = frac(frac(m,2), 2^n dot m dot 2) = frac(1, 2^n dot 4) $<eq:max_offset_even>
+$ phi_("max,even") = frac(frac(s,2), 2^n dot s dot 2) = frac(1, 2^n dot 4) $<eq:max_offset_even>
 
 Here, we multiply @eq:offset with the maximum offsetting index $i_"max" = s/2$.
 
 Now, if we want to find the maximum offset for a odd number of metrics, we need to modify @eq:max_offset_even, more specifically its numerator. 
-We know, that we need to keep the original quantizer for a odd number of metrics, besides that, the method stays the same. 
+We know, that we need to keep the original quantizer for a odd number of metrics.
+Besides that, the method stays the same. 
 For that reason, we will decrease the parameter $m$ by $1$, that way we will still perform a division without remainder:
 
 $
-phi_"max,odd" &= frac(frac(m-1, 2), 2^n dot m dot 2)\
-&= lr(frac(m-1, 2^n dot m dot 4)mid(|))_(n=2, m=3) = 1/24
+phi_"max,odd" &= frac(frac(s-1, 2), 2^n dot s dot 2)\
+&= lr(frac(s-1, 2^n dot s dot 4)mid(|))_(n=2, s=3) = 1/24
 $
 
-It is important to note, that $phi_"max,odd"$, unlike $phi_"max,even"$ is dependent on the parameter $m$.
+It is important to note, that $phi_"max,odd"$, unlike $phi_"max,even"$, is dependent on the parameter $s$ as we can see in @tb:odd_offsets.
 
 #figure(
   table(
     columns: (5),
     align: center + horizon, 
     inset: 7pt,
-    [*m*],[3],[5],[7],[9],
+    [*s*],[3],[5],[7],[9],
     [$bold(phi_"max,odd")$],[$1/24$],[$1/20$],[$3/56$],[$1/18$]
   ),
-)<tb:>
+  caption: [2-bit maximum offsets, odd]
+)<tb:odd_offsets>
+
+The higher $m$ is chosen, the closer we approximate $phi_"max,even"$ as shown in @eq:offset_limes. 
+This means, while also keeping the original quantizer during the reconstruction phase, the maximum offset for an odd number of metrics will always be smaller than for an even number. 
+//We will be able to observe this property later on in 
 
 $
-lim_(m arrow.r infinity) phi_"max,odd" &= frac(m-1, 2^n dot m dot 4)\ 
+lim_(s arrow.r infinity) phi_"max,odd" &= frac(s-1, 2^n dot s dot 4) #<eq:offset_limes>\
 &= frac(1, 2^n dot 4) = phi_"max,even" 
 $
+
+== Improvements
+
+The here proposed S-Metric Helper Data Method can be improved by using gray coded labels for the quantized symbols instead of naive ones @smhd.
+#align(center)[
+#scale(x: 80%, y: 80%)[
+#figure(
+  include("../graphics/quantizers/two-bit-enroll-gray.typ"),
+  caption: [Gray Coded 2-bit quantizer]
+)<fig:2-bit-gray>]]
+@fig:2-bit-gray shows a 2-bit quantizer with gray coded labelling.
+In this example, we have an advantage at $tilde(x) = ~ 0.5$, because a quantization error only returns one wrong bit instead of two.
+
+== Experiments
+
+We tested the implementation of @sect:smhd_implementation with the temperature dataset of @dataset.
+
+=== Methodology
+
+
+
+== Discussion
+
 

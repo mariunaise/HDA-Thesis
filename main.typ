@@ -40,5 +40,5 @@
 #include "glossary.typ"
 
 #counter(heading).update(0)
-#bibliography("bibliography.bib", style: "mla")
+#bibliography("bibliography.bib", style: "ieee")
 

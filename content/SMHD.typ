@@ -344,14 +344,23 @@ The here proposed S-Metric Helper Data Method can be improved by using gray code
 @fig:2-bit-gray shows a 2-bit quantizer with gray coded labelling.
 In this example, we have an advantage at $tilde(x) = ~ 0.5$, because a quantization error only returns one wrong bit instead of two.
 
-== Experiments
+== Experiments & Results
 
 We tested the implementation of @sect:smhd_implementation with the temperature dataset of @dataset.
+The dataset contains counts of positives edges of a toggle flip flop at a set evaluation time $D$. Based on the count and the evaluation time, the frequency of a ring oscillator can be calculated using: $f = 2 dot frac(k, D)$. 
+Because we want to analyze the performance of the S-Metric method over different temperatures, both during enrollment and reconstruction, we are limited to the second part of the experimental measurements of @dataset. 
+We will have measurements of $50$ FPGA boards available with $1600$ and $1696$ ring oscillators each. To obtain the values to be processed, we subtract them in pairs, yielding $800$ and $848$ ring oscillator frequency differences _df_.\ 
+Since the frequencies _f_ are normal distributed, the difference _df_ can be assumed to be zero-mean Gaussian distributed.
+To apply the values _df_ to our implementation of the S-Metric method, we will first transform them into the Tilde-Domain using an inverse CDF, resulting in uniform distributed values $tilde(italic("df"))$.
 
-=== Methodology
+=== General Interpretation
 
+The bit error rate of different S-Metric configurations for naive labelling can be seen in @fig:global_errorrates.
+For this analysis, enrollment and reconstruction were both performed at room temperature and the quantizer was naively labelled. 
 
-
-== Discussion
+#figure(
+  image("../graphics/25_25_all_error_rates.svg", width: 95%),
+  caption: [Bit error rates for same temperature execution]
+)<fig:global_errorrates>
 
 

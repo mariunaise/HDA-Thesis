@@ -344,6 +344,8 @@ The here proposed S-Metric Helper Data Method can be improved by using gray code
 @fig:2-bit-gray shows a 2-bit quantizer with gray coded labelling.
 In this example, we have an advantage at $tilde(x) = ~ 0.5$, because a quantization error only returns one wrong bit instead of two.
 
+== Helper data volume
+
 == Experiments & Results
 
 We tested the implementation of @sect:smhd_implementation with the temperature dataset of @dataset.
@@ -362,5 +364,41 @@ For this analysis, enrollment and reconstruction were both performed at room tem
   image("../graphics/25_25_all_error_rates.svg", width: 95%),
   caption: [Bit error rates for same temperature execution]
 )<fig:global_errorrates>
+
+We can observe two key properties of the S-Metric method in @fig:global_errorrates.
+The error rate in this plot is scaled logarithmically.\
+The exponential growth of the error rate of classic 1-metric configurations can be observed through the linear increase of the error rates.
+Also, as we expanded on in @par:offset_props, using more metrics will, at some point, not further improve the bit error rate of the key.
+At a symbol width of $m >= 6$ bits, no further improvement through the S-Metric method can be observed.
+
+#figure(
+  include("../graphics/plots/errorrates_changerate.typ"),
+  caption: [Asymptotic performance of S-Metric]
+)<fig:errorrates_changerate>
+
+This tendency can also be shown through @fig:errorrates_changerate. 
+Here, we calculated the quotient of the bit error rate using one metric and 100 metrics.
+From $m >= 6$ onwards, $(x_"1" (m)) / (x_"100" (m))$ approaches $~1$, which means, no real improvement is possible anymore through the S-Metric method.
+
+//=== Observation of offset $phi$ 
+
+//If we take a look at the 1-bit case, we can nicely observe the approximating nature of $phi_"max,odd"$ to $phi_"max,even"$ of @par:offset_props.
+
+//#figure(
+//  include("../graphics/plots/1bit_obs.typ"),
+//  caption: [Yoink]
+//)
+
+=== Impact of temperature
+
+Usually we will perform enrollment at room temperature. 
+We will now take a look at the impact of changing the temperature both during the enrollment and the reconstruction phase.
+
+==== Different reconstruction temperature
+
+
+==== Different enrollment temperature
+
+=== Gray coding
 
 

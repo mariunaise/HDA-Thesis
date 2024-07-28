@@ -332,7 +332,7 @@ lim_(s arrow.r infinity) phi_"max,odd" &= frac(s-1, 2^n dot s dot 4) #<eq:offset
 &= frac(1, 2^n dot 4) = phi_"max,even" 
 $
 
-== Improvements
+== Improvements<sect:smhd_improvements>
 
 The here proposed S-Metric Helper Data Method can be improved by using gray coded labels for the quantized symbols instead of naive ones @smhd.
 #align(center)[
@@ -391,14 +391,23 @@ From $m >= 6$ onwards, $(x_"1" (m)) / (x_"100" (m))$ approaches $~1$, which mean
 
 === Impact of temperature
 
-Usually we will perform enrollment at room temperature. 
-We will now take a look at the impact of changing the temperature both during the enrollment and the reconstruction phase.
+We will now take a look at the impact on the error rates of changing the temperature both during the enrollment and the reconstruction phase.
 
-==== Different reconstruction temperature
+The most common case to look at, is if we consider a fixed temperature during enrollment, most likely $25°C$.
+Since we wont always be able to recreate lab-like conditions during the reconstruction phase, it makes sense to look at the error rates at which reconstruction was performed at different temperatures. 
 
+#figure(
+  include("../graphics/plots/temperature/25_5_re.typ"),
+  caption: [Reconstruction at different temperatures]
+)<fig:smhd_tmp_reconstruction>
 
-==== Different enrollment temperature
+@fig:smhd_tmp_reconstruction shows the results of this experiment conducted with a 2-bit configuration.\
+As we can see, the further we move away from the temperature of enrollment, the higher the bit error rates turns out to be.
+
+// Table here with BER without helper data and with 100 metrics for best improvement case. Talk about improvements in numerical parts
+
 
 === Gray coding
 
+In @sect:smhd_improvements, we discussed how a gray coded labelling for the quantizer could improve the bit error rates of the S-Metric method.
 

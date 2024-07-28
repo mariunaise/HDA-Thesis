@@ -31,6 +31,7 @@
 
 #include "content/introduction.typ"
 #include "content/SMHD.typ"
+#include "content/BACH.typ"
 //#include "content/state.typ"
 //#include "content/implementation.typ"
 //#include "content/benchmarks.typ"

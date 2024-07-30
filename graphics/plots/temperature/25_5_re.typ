@@ -20,14 +20,16 @@
 
 #let formatter(v) = [$10^#v$]
 
+
 #let dashed = (stroke: (dash: "dashed"))
 #canvas({
   plot.plot(size: (10,5),
     x-tick-step: none,
-    //x-ticks: ((1, [1]), (2, [2]), (3, [3]), (4, [4]), (5, [5]), (6, [6])),
+    x-ticks: ((0.04, [2]),(2, [100])),
     y-label: $"Bit error rate"$,
     x-label: $s$,
     y-tick-step: 1,
+    x-max: 2,
     //y-ticks : (
     //  (-1.5, calc.exp(-1.5)),
     //),

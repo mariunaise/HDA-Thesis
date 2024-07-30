@@ -1,28 +1,30 @@
+#import "@preview/drafting:0.2.0": *
+
 = S-Metric Helper Data Method <chap:smhd>
 
 A metric based @hda generates helper data at PUF enrollment to provide more reliable results at the reconstruction stage. 
 Each of these metrics correspond to a quantizer with different bounds to lower the risk of bit or symbol errors during reconstruction. 
 
 == Background
-
+#inline-note[Hier noch bla bla]
 === Distribution Independency <sect:dist_independency>
 
-The publications for the Two-Metric approach @tmhd1 and @tmhd2, as well as the generalized S-Metric approach @smhd make the assumption, that the PUF readout is "zero-mean Gaussian distributed" @smhd. 
+The publications for the Two-Metric approach @tmhd1 and @tmhd2, as well as the generalized S-Metric approach @smhd make the assumption, that the PUF readout is zero-mean Gaussian distributed @smhd. 
 We propose, that a Gaussian distributed input for S-Metric quantization is not required for the operation of this quantizing algorithm. 
 Instead, any distribution can be used for input values given, that a CDF exists for that distribution and its parameters are known. 
 As already mentioned in @tilde-domain, this transformation will result in uniformly distributed values, where equi-probable areas in the real domain correspond to equi-distant areas in the Tilde-Domain. 
 Contrary to @tmhd1, @tmhd2 and @smhd, which display relevant areas as equi-probable in a normal distribution, we will use equi-distant areas in a uniform distribution for better understandability. 
-It has to be mentioned, that instead of transforming all values of the PUF readout into the Tilde-Domain, we could also use an inverse CDF to transform the bounds of our evenly spaced areas into the real domain with (normal) distributed values, which can be assessed as remarkably less computationally complex.
+It has to be mentioned, that instead of transforming all values of the PUF readout into the Tilde-Domain, we could also use an inverse CDF to transform the bounds of our evenly spaced areas into the real domain with (normal) distributed values, which can be assessed as remarkably less computationally complex.#margin-note[Das erst später]
 
 === Two-Metric Helper Data Method <sect:tmhd>
-
-The most simple form of a metric-based @hda is the Two-Metric Helper Data Method, since the quantization only yields symbols of 1-bit width and uses the lead amount of metrics possible. 
+#inline-note[Absatz nach oben verschieben]
+The most simple form of a metric-based @hda is the Two-Metric Helper Data Method, since the quantization only yields symbols of 1-bit width and uses the least amount of metrics possible #margin-note[wenn man mehrere benutzen will]. 
 Publications @tmhd1 and @tmhd2 find all the relevant bounds for the enrollment and reconstruction phases under the assumption that the PUF readout is Gaussian distributed. 
-Because this approach is static, meaning the parameters for symbol width and number of metrics always stays the same, it is easier to calculate the bounds for 8 equi-probable areas with a standard deviation of $sigma = 1$ first and then multiplying them with the estimated standard deviation of the PUF readout. 
+Because this approach is static, meaning the parameters for symbol width and number of metrics always stays the same, it is easier to calculate #margin-note[obdA annehmen hier] the bounds for 8 equi-probable areas with a standard deviation of $sigma = 1$ first and then multiplying them with the estimated standard deviation of the PUF readout. 
 This is done by finding two bounds $a$ and $b$, that 
 $ integral_a^b f_X(x) \dx = 1/8 $
 This operation yields 9 bounds defining these areas $-\T1$, $-a$, $-\T2$, $0$, $\T2$, $a$, $\T1$ and $plus.minus infinity$.
-During the enrollment phase, we will use $plus.minus a$ as our quantizing bounds, retuning $0$ if the absolute value is smaller than $a$ and $1$ otherwise.
+During the enrollment phase, we will use $plus.minus a$ as our quantizing bounds, returning $0$ if the absolute value is smaller than $a$ and $1$ otherwise.
 The corresponding metric is chosen based on the following conditions: 
 
 $ M = cases(
@@ -30,7 +32,7 @@ $ M = cases(
     \M2\, -a < x or 1 < a < x
 ) $
 
-@fig:tmhd_enroll shows the curve of a quantizer $cal(Q)$, that would be used during the Two-Metric enrollment phase. At this point, we will still assume, that our input value $x$ is zero-mean Gaussian distributed. 
+@fig:tmhd_enroll shows the curve of a quantizer $cal(Q)$, that would be used during the Two-Metric enrollment phase. At this point, we will still assume, that our input value $x$ is zero-mean Gaussian distributed. #margin-note[Als Annahme nach vorne verschieben]
 
 #grid(
   columns: (1fr, 1fr),
@@ -43,7 +45,7 @@ $ M = cases(
 )
 
 
-The metric will be stored publicly for every quantized bit as helper data. 
+The metric will be stored publicly#margin-note[Modellbeschreibung, weiter vorne] for every quantized bit as helper data. 
 As previously described, each of these metrics correspond to a different quantizer. 
 Now, we can use the generated helper data in the reconstruction phase and define a reconstructed bit based on the chosen metric as follows: 
 
@@ -102,7 +104,7 @@ The generalization consists of two components:
 - *Using more than two metrics* \
   Instead of splitting each quantizer into only two equi-probable parts, we can increase the number of metrics at the cost of generating more helper data.
 
-== Implementation<sect:smhd_implementation>
+== #margin-note[Section umbenennen]Implementation<sect:smhd_implementation> 
 
 We will now propose a specific implementation of the S-Metric Helper Data Method. \
 As shown in @sect:dist_independency, we can use a CDF to transform our random distributed variable $X$ into the Tilde-Domain: $tilde(X)$.
@@ -137,7 +139,7 @@ More specifically, we will define the amount of metrics we want to use with the 
 
 $ Delta_s = frac(Delta, s) = frac(frac(1, 2^m), s) = frac(1, 2^m dot s) $<eq:delta_s>
 
-After this definition, we need to make an adjustment to our previously defined quantizer function, because we cannot simply return the quantized value based on a quantizer with step size $Delta_s$. 
+After this definition #margin-note[Absatz nochmal neu], we need to make an adjustment to our previously defined quantizer function, because we cannot simply return the quantized value based on a quantizer with step size $Delta_s$. 
 That would just increase the amounts of bits we will extract out of one measurement. 
 Instead, we will need to return a tuple, consisting of the quantized symbol and the metric ascertained that we will save as helper data for later. 
 
@@ -162,7 +164,7 @@ We can visualize the quantizer that we will use during the enrollment phase of a
 include("../graphics/quantizers/s-metric/3_2_en.typ"),
 caption: [2-bit 3-metric enrollment]
 ) <fig:smhd_3_2_en>]])
-
+#margin-note[Zusammen als sub figure]
 To better demonstrate the generalization to $s$-metrics, @fig:smhd_3_2_en shows a 2-bit quantizer that generates helper data based on three metrics instead of two.
 In that sense, increasing the number of metrics will increase the number of sub-steps for each symbol.
 
@@ -206,7 +208,7 @@ With these new points for the vertical steps of $cal(Q)$, we can draw the new qu
   )<fig:smhd_found_bound_graph>]]
 )
 
-As for metric 2, we can apply the same strategy and find the points for the vertical steps to be at $1/16, 5/16, 9/16$ and $13/16$. This quantizer can be visualized together with the first metric quantizer in @fig:smhd_2_2_reconstruction, forming the complete quantizer for the reconstruction phase of a 2-bit 2-metric configuration $cal(R)(2,2,tilde(x))$.
+As for metric 2, we can apply the same strategy and find the points for the vertical steps to be at $1/16, 5/16, 9/16$ and $13/16$. This quantizer is shown together with the first metric quantizer in @fig:smhd_2_2_reconstruction, forming the complete quantizer for the reconstruction phase of a 2-bit 2-metric configuration $cal(R)(2,2,tilde(x))$.
 
 #grid(
   columns: (1fr, 1fr), 
@@ -402,12 +404,30 @@ Since we wont always be able to recreate lab-like conditions during the reconstr
 )<fig:smhd_tmp_reconstruction>
 
 @fig:smhd_tmp_reconstruction shows the results of this experiment conducted with a 2-bit configuration.\
-As we can see, the further we move away from the temperature of enrollment, the higher the bit error rates turns out to be.
+As we can see, the further we move away from the temperature of enrollment, the higher the bit error rates turns out to be.\
+Going more into detail, we can look at the exact bit error rates in @tab:smhd_tmp_differences.
 
-// Table here with BER without helper data and with 100 metrics for best improvement case. Talk about improvements in numerical parts
+#figure(
+  table(
+    columns: (4),
+    align: center + horizon, 
+    inset: 7pt,
+    [*Temperature*], [*No helper data*],[*Two-Metric*],[*s=100 Metric*],
+    [-20°C], [$3.9 dot 10^(-2)$], [$2.1 dot 10^(-3)$], [$1.5 dot 10^(-4)$],
+    [-10°C], [$3.7 dot 10^(-2)$], [$1.4 dot 10^(-3)$], [$0.8 dot 10^(-4)$],
+    [$plus.minus 0$°C], [$2 dot 10^(-2)$], [$0.008 dot 10^(-3)$], [$0.035 dot 10^(-4)$],
+    [+10°C], [$3.7 dot 10^(-2)$], [$1.3 dot 10^(-3)$], [$0.6 dot 10^(-4)$],
+    [+20°C], [$4.4 dot 10^(-2)$], [$3.1 dot 10^(-3)$], [$3.5 dot 10^(-4)$],
+    [+30°C], [$5.2 dot 10^(-2)$], [$7 dot 10^(-3)$], [$15 dot 10^(-4)$],
+  ),
+  caption: [BERs 2-bit configuration at 25°C enrollment]
+)<tab:smhd_tmp_differences>
+
+Comparing the absolute temperature difference pairs of @tab:smhd_tmp_differences, we can generally conclude, that a higher temperature during reconstruction has a higher impact on the bit error rate than a lower one.
 
 
 === Gray coding
 
 In @sect:smhd_improvements, we discussed how a gray coded labelling for the quantizer could improve the bit error rates of the S-Metric method.
 
+#inline-note[Hier: auch Auswertung über die Temperatur, oder kann man die eigenschaften einfach übernehmen aus der vorherigen Section? (Sie translaten einfach)]

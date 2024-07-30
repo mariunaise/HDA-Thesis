@@ -7,6 +7,7 @@
 #import "@preview/unify:0.6.0"
 #import "@preview/quill:0.3.0"
 #import "@preview/equate:0.2.0": equate
+#import "@preview/drafting:0.2.0": *
 
 #show: equate.with(breakable: true, sub-numbering: true)
 #set math.equation(numbering: "(1.1)")
@@ -16,6 +17,9 @@
 #show: make-glossary
 
 #set document(title: "Towards Efficient Helper Data Algorithms for Multi-Bit PUF Quantization", author: "Marius Drechsler")
+
+#set-page-properties()
+
 
 #show: doc => conf(
   title: "Towards Efficient Helper Data Algorithms for Multi-Bit PUF Quantization",

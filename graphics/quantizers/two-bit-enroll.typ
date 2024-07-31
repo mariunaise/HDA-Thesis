@@ -14,7 +14,7 @@
     x-max: 1,
     y-min: 0,
     y-max: 1,{
-    plot.add(((0,0), (0.25,0.25), (0.5,0.5), (0.75,0.75), (1, 1)), line: "vh", style: line_style)
+    plot.add(((0,0.25), (0.25,0.25), (0.5,0.5), (0.75,0.75), (1, 1)), line: "vh", style: line_style)
     plot.add-hline(0.25, 0.5, 0.75, 1, style: dashed)
     plot.add-vline(0.25, 0.5, 0.75, 1, style: dashed)
   })

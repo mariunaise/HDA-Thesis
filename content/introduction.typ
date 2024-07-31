@@ -25,9 +25,10 @@ For the reconstruction phase, a quantizer will be defined by a calligraphic $cal
 
 For the S-Metric Helper Data Method, we introduce a function
 
-$ cal(Q)(s,m) $<eq-1>
+$ cal(Q)(S,M) , $<eq-1>
 
-where s determines the amount of metrics and m the bit width of the symbols.
+where $S$ determines the number of metrics and $M$ the bit width of the symbols.
+The corresponding metric is defined through the lower case $s$, the bit symbol through the lower case $m$.
 
 === Tilde-Domain<tilde-domain>
 

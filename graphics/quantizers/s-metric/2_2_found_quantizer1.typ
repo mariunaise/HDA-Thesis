@@ -6,7 +6,7 @@
   plot.plot(size: (8,6),
     x-tick-step: none,
     x-ticks: ((3/16, [3/16]), (7/16, [7/16]), (11/16, [11/16]), (15/16, [15/16])),
-    y-label: $cal(Q)(2, 2, tilde(x))$,
+    y-label: $cal(Q)_("m1")(2, 2, tilde(x))$,
     x-label: $tilde(x)$,
     y-tick-step: none,
     y-ticks: ((1/4, [00]), (2/4, [01]), (3/4, [10]), (4/4, [11])),

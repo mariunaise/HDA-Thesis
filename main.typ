@@ -12,6 +12,10 @@
 #show: equate.with(breakable: true, sub-numbering: true)
 #set math.equation(numbering: "(1.1)")
 
+#show figure.where(
+  kind: table
+): set figure.caption(position: top)
+
 #import "template/conf.typ": conf
 
 #show: make-glossary

@@ -4,6 +4,7 @@
 
 A metric based @hda generates helper data at PUF enrollment to provide more reliable results at the reconstruction stage. 
 Each of these metrics correspond to a quantizer with different bounds to lower the risk of bit or symbol errors during reconstruction.
+For this kind of @hda, the generated metric is used as helper data and thus does not have to be kept secret.
 
 == Background
 
@@ -20,7 +21,23 @@ It has to be mentioned, that instead of transforming all values of the PUF reado
 */
 === Two-Metric Helper Data Method <sect:tmhd>
 The most simple form of a metric-based @hda is the Two-Metric Helper Data Method, since the quantization only yields symbols of 1-bit width and uses the least amount of metrics possible if we want to use more than one metric. 
-Publications @tmhd1 and @tmhd2 find all the relevant bounds for the enrollment and reconstruction phases under the assumption that the PUF readout is Gaussian distributed. 
+
+@fig:tmhd_example_enroll and @fig:tmhd_example_reconstruct illustrate an example enrollment and reconstruction process. 
+We would consider the marked point the value of the initial measurement and the marked range our margin of error.
+If we now were to use the original quantizer shown in @fig:tmhd_example_enroll during both the enrollment and the reconstruction phases, we would risk a bit error, because the margin of error overlaps with the lower quantization bound $-a$, which we can call a point of uncertainty.
+But since we generated helper data during enrollment as depicted in @fig:tmhd_enroll, we can make use of a different quantizer $cal(R)(1, 2, x)$ whose boundaries do not overlap with the error margin. 
+#scale(x: 90%, y: 90%)[
+#grid(
+  columns: (1fr, 1fr),
+  [#figure(
+  include("../graphics/quantizers/two-metric/example_enroll.typ"),
+  caption: [Example enrollment]) <fig:tmhd_example_enroll>],
+  [#figure(
+    include("../graphics/quantizers/two-metric/example_reconstruct.typ"),
+    caption: [Example reconstruction]) <fig:tmhd_example_reconstruct>]
+)]
+
+Publications @tmhd1 and @tmhd2 find all the relevant bounds for the enrollment and reconstruction phases under the assumption that the PUF readout (our input value $x$) is zero-mean Gaussian distributed. 
 //Because the parameters for symbol width and number of metrics always stays the same, it is easier to calculate #margin-note[obdA annehmen hier] the bounds for 8 equi-probable areas with a standard deviation of $sigma = 1$ first and then multiplying them with the estimated standard deviation of the PUF readout.
 Because the parameters for symbol width and number of metrics always stays the same, we can -- without loss of generality -- assume the standard deviation as $sigma = 1$ and calculate the bounds for 8 equi-probable areas for this distribution. 
 This is done by finding two bounds $a$ and $b$ such, that 
@@ -34,7 +51,8 @@ $ M = cases(
     \M2\, -a < x or 1 < a < x
 )space.en. $
 
-@fig:tmhd_enroll shows the curve of a quantizer $cal(Q)$ that would be used during the Two-Metric enrollment phase. At this point we will still assume that our input value $x$ is zero-mean Gaussian distributed. #margin-note[Als Annahme nach vorne verschieben]
+@fig:tmhd_enroll shows the curve of a quantizer $cal(Q)$ that would be used during the Two-Metric enrollment phase.
+At this point we will still assume that our input value $x$ is zero-mean Gaussian distributed. #margin-note[Als Annahme nach vorne verschieben]
 #scale(x: 90%, y: 90%)[
 #grid(
   columns: (1fr, 1fr),
@@ -47,34 +65,20 @@ $ M = cases(
 )
 ]
 
-The metric will be stored publicly#margin-note[Modellbeschreibung, weiter vorne] for every quantized bit as helper data. 
 As previously described, each of these metrics correspond to a different quantizer. 
 Now, we can use the generated helper data in the reconstruction phase and define a reconstructed bit based on the chosen metric as follows: 
 
 $ #grid(
   columns: (1fr, 1fr),
   align: (center, center),
-  math.equation($\M1: k = cases(0\, x < \T1 or \T2 < x, 1\, -\T1 < x < \T2)$, block: true, numbering: none),
-  math.equation($\M2: k = cases(0\, x < -\T2 or \T1 < x, 1\, -\T2 < x < \T1)$, block: true, numbering: none)
+  math.equation($\M1: k = cases(0\, x < \T1 or \T2 < x, 1\, -\T1 < x < \T2),$, block: true, numbering: none),
+  math.equation($\M2: k = cases(0\, x < -\T2 or \T1 < x, 1\, -\T2 < x < \T1).$, block: true, numbering: none)
 ) $
 
-@fig:tmhd_reconstruct illustrates the basic idea behind the Two-Metric method. Using the helper data, we will move the bounds of the original quantizer one octile to each side, yielding two new quantizers. 
+@fig:tmhd_reconstruct illustrates the basic idea behind the Two-Metric method. Using the helper data, we will move the bounds of the original quantizer (@fig:tmhd_example_enroll) one octile to each side, yielding two new quantizers. 
 The advantage of this method comes from moving the point of uncertainty away from our readout position. 
 
-@fig:tmhd_example_enroll and @fig:tmhd_example_reconstruct illustrate an example enrollment and reconstruction process. 
-We would consider the marked point the value of the initial measurement and the marked range our margin of error.
-If we now were to use the quantizer shown in @fig:tmhd_example_enroll during both the enrollment and the reconstruction phases, we would risk a bit error, because the margin of error overlaps with the lower quantization bound $-a$.
-But since we generated helper data during enrollment as depicted in @fig:tmhd_enroll, we can make use of a different quantizer $cal(R)(1, 2, x)$ whose boundaries do not overlap with the error margin. 
-#scale(x: 90%, y: 90%)[
-#grid(
-  columns: (1fr, 1fr),
-  [#figure(
-  include("../graphics/quantizers/two-metric/example_enroll.typ"),
-  caption: [Example enrollment]) <fig:tmhd_example_enroll>],
-  [#figure(
-    include("../graphics/quantizers/two-metric/example_reconstruct.typ"),
-    caption: [Example reconstruction]) <fig:tmhd_example_reconstruct>]
-)]
+
 
 === S-Metric Helper Data Method
 
@@ -84,7 +88,7 @@ This generalization allows for higher-order bit quantization and the use of more
 A key difference to the Two-Metric approach is the alignment of quantization areas. 
 Methods described in @tmhd1 and @tmhd2 use two bounds for 1-bit quantization, namely $plus.minus a$.
 Contrary, the method introduced by Fischer in @smhd would look more like a sign-based quantizer if the configuration $cal(Q)(2, 1)$ is used, using only one quantization bound at $x=0$.
-@fig:smhd_compar1 and @fig:smhd_compar2 illustrate this difference. 
+@fig:smhd_compar1 and @fig:smhd_compar2 illustrate this difference, . 
 
 #grid(
   columns: (1fr, 1fr),
@@ -112,19 +116,19 @@ We will now propose a specific realization of the S-Metric Helper Data Method. \
 This allows us to use equi-distant bounds for the quantizer instead of equi-probable ones. 
 
 From now on we will use the following syntax for quantizers that use the S-Metric Helper Data Method: 
-$ cal(Q)(s, m, tilde(x)) $
+$ cal(Q)(S, M, tilde(x)), $
 
-where $s$ defines the number of metrics, $m$ the number of bits and $tilde(x)$ a Tilde-Domain transformed PUF measurement.
+where $S$ defines the number of metrics, $M$ the number of bits and $tilde(x)$ a Tilde-Domain transformed PUF measurement.
 === Enrollment
 
 To enroll our PUF key, we will first need to define the quantizer for higher order bit quantization and helper data generation. 
 Because our transformed PUF readout $tilde(x)$ can be interpreted as a realization of a uniformly distributed variable $tilde(X)$, we can define the width $Delta$ of our quantizer bins as follows: 
 
-$ Delta = frac(1, 2^m) . $<eq:delta>
+$ Delta = frac(1, 2^M) . $<eq:delta>
 
 For example, if we were to extract a symbol with the width of 2 bits from our PUF readout, we would need to evenly space $2^2 = 4$ bins. Using equation @eq:delta, the step size for a 2-bit quantizer would result to: 
 
-$ Delta' = lr(frac(1, 2^m) mid(|))_(m=2)= frac(1, 4) . $
+$ Delta' = lr(frac(1, 2^M) mid(|))_(M=2)= frac(1, 4) . $
 
 @fig:smhd_two_bit shows a plot of the resulting quantizer function that would yield symbols with two bits for one measurement $tilde(x)$.
 
@@ -135,20 +139,22 @@ $ Delta' = lr(frac(1, 2^m) mid(|))_(m=2)= frac(1, 4) . $
 
 Right now, this quantizer wouldn't help us generating any helper data. 
 To achieve that, we will need to divide a symbol step -- one, that returns the corresponding quantized symbol - into multiple sub-steps.
-More specifically, we will define the number of metrics we want to use with the parameter $s$. Using $s$, we can define the step size $Delta_s$ as the division of $Delta$ by $s$:
+Using $S$, we can define the step size $Delta_S$ as the division of $Delta$ by $S$:
 
-$ Delta_s = frac(Delta, s) = frac(frac(1, 2^m), s) = frac(1, 2^m dot s) $<eq:delta_s>
+$ Delta_S = frac(Delta, S) = frac(frac(1, 2^M), S) = frac(1, 2^M dot S) $<eq:delta_s>
 
-After this definition #margin-note[Absatz nochmal neu], we need to make an adjustment to our previously defined quantizer function, because we cannot simply return the quantized value based on a quantizer with step size $Delta_s$. 
+/*After this definition #margin-note[Absatz nochmal neu], we need to make an adjustment to our previously defined quantizer function, because we cannot simply return the quantized value based on a quantizer with step size $Delta_s$. 
 That would just increase the amounts of bits we will extract out of one measurement. 
 Instead, we will need to return a tuple, consisting of the quantized symbol and the metric ascertained that we will save as helper data for later. 
+*/
+We can now redefine our previously defined quantizer function to not only return the quantized symbol, but a tuple consisting of the quantized symbol and the metric ascertained that we will save as helper data for later.
 
 Going on in our example, we could choose the amount of our metrics to be 2. According to @eq:delta_s, we would then half our step size: 
 
-$ Delta'_s = lr(frac(Delta', s)mid(|))_(s=2) = frac(1, 4 dot 2) = frac(1, 8) $
+$ Delta'_S = lr(frac(Delta', S)mid(|))_(S=2) = frac(1, 4 dot 2) = frac(1, 8) $
 
 
-This means, we can update our quantizer function with the new step size $Delta'_s = frac(1, 8)$ and redefining its output as a tuple consisting of bit value and helper data. 
+This means, we can update our quantizer function with the new step size $Delta'_S = frac(1, 8)$ and redefining its output as a tuple consisting of bit value and helper data. 
 
 We can visualize the quantizer that we will use during the enrollment phase of a 2-bit 2-metric configuration as depicted in @fig:smhd_2_2_en.
 
@@ -182,9 +188,7 @@ We already demonstrated the basic principle of the reconstruction phase in secti
 We will call our repeated measurement of $tilde(x)$ that is subject to a certain error $tilde(x^*)$.
 To perform reconstruction with $tilde(x^*)$, we will first need to find all $S$ quantizers for which we generated the helper data in the previous step. 
 
-We have to distinguish two different cases for the value of $S$: 
-- $S$ is odd 
-- $S$ is even
+We have to distinguish the two cases, that $S$ is either even or odd. 
 
 If $S$ is even, we need to move our quantizer $S/2$ times some distance to the right and $S/2$ times some distance to the left.
 We can define the ideal position for the quantizer bounds based on its corresponding metric as centered around the center of the related metric.
@@ -230,13 +234,15 @@ As for metric 2, we can apply the same strategy and find the points for the vert
 
 Analytically, the offset we are applying to $cal(E)(2, 2, tilde(x))$ can be defined as
 
-$ Phi = lr(frac(1, 2^M dot S dot 2)mid(|))_(M=2, S=2) = 1 / 16 $<eq:offset>
+$ Phi = lr(frac(1, 2^M dot S dot 2)mid(|))_(M=2, S=2) = 1 / 16 space.en. $<eq:offset>
 
-This is also shown in @fig:smhd_2_2_reconstruction, as our quantizer curve is moved $1/16$ to the left and the right. 
+$Phi$ is the constant that we will multiply with a certain metric index $i$ to obtain the metric offset $phi$, which is used to define each of the $S$ different quantizers for reconstruction.
+//This is also shown in @fig:smhd_2_2_reconstruction, as our quantizer curve is moved $1/16$ to the left and the right.
+In @fig:smhd_2_2_reconstruction, the two metric indices $i = plus.minus 1$ will be multiplied with $Phi$, yielding two quantizers, one moved $1/16$ to the left and one moved $1/16$ to the right. 
 
 If a odd number of metrics is given, the offset can still be calculated using @eq:offset. Additionally, we will keep the original quantizer used during enrollment (@fig:smhd_3_2_reconstruction).
 
-Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their respective values of @eq:offset, we can observe, that the offset $phi$ gets smaller the more metrics we use. 
+Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their respective values of @eq:offset, we can observe, that the offset $Phi$ gets smaller the more metrics we use. 
 
 
 #figure(

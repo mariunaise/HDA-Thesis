@@ -188,9 +188,8 @@ We already demonstrated the basic principle of the reconstruction phase in secti
 We will call our repeated measurement of $tilde(x)$ that is subject to a certain error $tilde(x^*)$.
 To perform reconstruction with $tilde(x^*)$, we will first need to find all $S$ quantizers for which we generated the helper data in the previous step. 
 
-We have to distinguish the two cases, that $S$ is either even or odd. 
-
-If $S$ is even, we need to move our quantizer $S/2$ times some distance to the right and $S/2$ times some distance to the left.
+We have to distinguish the two cases, that $S$ is either even or odd:\
+If $S$ is even, we need to define $S$ quantizers offset by some distance $phi$.
 We can define the ideal position for the quantizer bounds based on its corresponding metric as centered around the center of the related metric.
 
 We can find these new bounds graphically as depicted in @fig:smhd_find_bound_graph. We first determine the x-values of the centers of a metric (here M1, as shown with the arrows). We can then place the quantizer steps with step size $Delta$ (@eq:delta) evenly spaced around these points.
@@ -240,10 +239,23 @@ $Phi$ is the constant that we will multiply with a certain metric index $i$ to o
 //This is also shown in @fig:smhd_2_2_reconstruction, as our quantizer curve is moved $1/16$ to the left and the right.
 In @fig:smhd_2_2_reconstruction, the two metric indices $i = plus.minus 1$ will be multiplied with $Phi$, yielding two quantizers, one moved $1/16$ to the left and one moved $1/16$ to the right. 
 
-If a odd number of metrics is given, the offset can still be calculated using @eq:offset. Additionally, we will keep the original quantizer used during enrollment (@fig:smhd_3_2_reconstruction).
+If a odd number of metrics is given, the offset can still be calculated using @eq:offset. Additionally, we will keep the original quantizer used during enrollment as the quantizer for metric $(s-1)/2$ (@fig:smhd_3_2_reconstruction).
 
-Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their respective values of @eq:offset, we can observe, that the offset $Phi$ gets smaller the more metrics we use. 
 
+
+To find all metric offsets for values of $S > 3$, we can use @alg:find_offsets.
+For application, we calculate $phi$ based on $S$ and $M$ using @eq:offset. The resulting list of offsets is correctly ordered and can be mapped to the corresponding metrics in ascending order.// as we will show in @fig:4_2_offsets and @fig:6_2_offsets.
+
+#figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+  include("../pseudocode/offsets.typ")
+)<alg:find_offsets>
+
+==== Offset properties<par:offset_props>
+#inline-note[Diese section ist hier etwas fehl am Platz, ich weiß nur nicht genau wohin damit. Außerdem ist sie ein bisschen durcheinander geschrieben]
+Lets look deeper into the properties of the offset value $phi$.\
+Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their respective values of @eq:offset, we can observe, that the offset $Phi$ gets smaller the more metrics we use.
 
 #figure(
   table(
@@ -256,19 +268,6 @@ Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their r
   ),
   caption: [Offset values for 2-bit configurations]
 )<tab:offsets>
-
-To find all offsets for values of $S > 3$, we can use @alg:find_offsets.
-For application, we calculate $phi$ based on the metric using @eq:offset. The resulting list of offsets is correctly ordered and can be mapped to the corresponding metrics in ascending order as we will show in @fig:4_2_offsets and @fig:6_2_offsets.
-
-#figure(
-  kind: "algorithm",
-  supplement: [Algorithm],
-  include("../pseudocode/offsets.typ")
-)<alg:find_offsets>
-
-==== Offset properties<par:offset_props>
-
-Lets look deeper into the properties of the offset value $phi$.
 As previously stated, we will need to move the enrollment quantizer $s/2$ times to the left and $s/2$ times to the right. 
 For example, setting parameter $s$ to $4$ means we will need to move the enrollment quantizer $lr(s/2 mid(|))_(s=4) = 2$ times to the left and right. 
 As we can see in @fig:4_2_offsets, $phi$ for the indices $i = plus.minus 2$ are identical to the offsets of a 2-bit 2-metric configuration.
@@ -342,7 +341,7 @@ $
 
 == Improvements<sect:smhd_improvements>
 
-The here proposed S-Metric Helper Data Method can be improved by using gray coded labels for the quantized symbols instead of naive ones @smhd.
+The by @smhd proposed S-Metric Helper Data Method can be improved by using gray coded labels for the quantized symbols instead of naive ones.
 #align(center)[
 #scale(x: 80%, y: 80%)[
 #figure(

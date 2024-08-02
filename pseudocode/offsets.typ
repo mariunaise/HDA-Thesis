@@ -1,9 +1,9 @@
 #import "@preview/lovelace:0.3.0": *
 
 
-#pseudocode-list(booktabs: true, numbered-title: [Find all offsets])[
+#pseudocode-list(booktabs: true, numbered-title: [Find all offsets $phi$])[
   + *input* $Phi, S$
-  + *list* offsets
+  + *list* offsets $phi$
   + *if* $S$ is odd
     + $S = s-1$
     + *append* 0 *to list* offsets

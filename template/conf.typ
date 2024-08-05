@@ -111,13 +111,13 @@
     footer: none,
   )
 
-  set page(footer: locate(
-  loc => if calc.even(loc.page()) {
-    align(right, counter(page).display("1"));
-  } else {
-    align(left, counter(page).display("1"));
-  }
-  ))
+  //set page(footer: locate(
+  //loc => if calc.even(loc.page()) {
+  //  align(right, counter(page).display("1"));
+  //} else {
+  //  align(left, counter(page).display("1"));
+  //}
+  //))
 
   doc
 }

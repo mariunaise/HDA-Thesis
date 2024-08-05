@@ -1,13 +1,14 @@
 #import "@preview/cetz:0.2.2"
 #import "@preview/fletcher:0.5.1"
 #import "@preview/gentle-clues:0.9.0"
-#import "@preview/glossarium:0.4.1": make-glossary
+#import "@preview/glossarium:0.4.1": *
 #import "@preview/lovelace:0.3.0"
 #import "@preview/tablex:0.0.8"
 #import "@preview/unify:0.6.0"
 #import "@preview/quill:0.3.0"
 #import "@preview/equate:0.2.0": equate
 #import "@preview/drafting:0.2.0": *
+
 
 #show: equate.with(breakable: true, sub-numbering: true)
 #set math.equation(numbering: "(1.1)")
@@ -22,8 +23,6 @@
 
 #set document(title: "Towards Efficient Helper Data Algorithms for Multi-Bit PUF Quantization", author: "Marius Drechsler")
 
-#set-page-properties()
-
 
 #show: doc => conf(
   title: "Towards Efficient Helper Data Algorithms for Multi-Bit PUF Quantization",
@@ -36,7 +35,13 @@
   submitted: "22.07.2024",
   doc
 )
-
+#set page(footer: locate(
+  loc => if calc.even(loc.page()) {
+    align(right, counter(page).display("1"));
+  } else {
+    align(left, counter(page).display("1"));
+  }
+  ))
 #include "content/introduction.typ"
 #include "content/SMHD.typ"
 #include "content/BACH.typ"

@@ -1,4 +1,5 @@
 #import "@preview/drafting:0.2.0": *
+#import "@preview/glossarium:0.4.1": *
 
 = S-Metric Helper Data Method <chap:smhd>
 
@@ -38,12 +39,12 @@ But since we generated helper data during enrollment as depicted in @fig:tmhd_en
 )]
 
 Publications @tmhd1 and @tmhd2 find all the relevant bounds for the enrollment and reconstruction phases under the assumption that the PUF readout (our input value $x$) is zero-mean Gaussian distributed. 
-//Because the parameters for symbol width and number of metrics always stays the same, it is easier to calculate #margin-note[obdA annehmen hier] the bounds for 8 equi-probable areas with a standard deviation of $sigma = 1$ first and then multiplying them with the estimated standard deviation of the PUF readout.
+//Because the parameters for symbol width and number of metrics always stays the same, it is easier to calculate #m//argin-note[obdA annehmen hier] the bounds for 8 equi-probable areas with a standard deviation of $sigma = 1$ first and then multiplying them with the estimated standard deviation of the PUF readout.
 Because the parameters for symbol width and number of metrics always stays the same, we can -- without loss of generality -- assume the standard deviation as $sigma = 1$ and calculate the bounds for 8 equi-probable areas for this distribution. 
 This is done by finding two bounds $a$ and $b$ such, that 
 $ integral_a^b f_X(x) \dx = 1/8 $
 This operation yields 9 bounds defining these areas $-infinity$, $-\T1$, $-a$, $-\T2$, $0$, $\T2$, $a$, $\T1$ and $+infinity$.
-During the enrollment phase, we will use $plus.minus a$ as our quantizing bounds, returning $0$ if the #margin-note[Rück-\ sprache?] absolute value is smaller than $a$ and $1$ otherwise.
+During the enrollment phase, we will use $plus.minus a$ as our quantizing bounds, returning $0$ if the //#margin-note[Rück-\ sprache?] absolute value is smaller than $a$ and $1$ otherwise.
 The corresponding metric is chosen based on the following conditions: 
 
 $ M = cases(
@@ -52,7 +53,7 @@ $ M = cases(
 )space.en. $
 
 @fig:tmhd_enroll shows the curve of a quantizer $cal(Q)$ that would be used during the Two-Metric enrollment phase.
-At this point we will still assume that our input value $x$ is zero-mean Gaussian distributed. #margin-note[Als Annahme nach vorne verschieben]
+At this point we will still assume that our input value $x$ is zero-mean Gaussian distributed. //#margin-note[Als Annahme nach vorne verschieben]
 #scale(x: 90%, y: 90%)[
 #grid(
   columns: (1fr, 1fr),
@@ -80,7 +81,7 @@ The advantage of this method comes from moving the point of uncertainty away fro
 
 
 
-=== S-Metric Helper Data Method
+=== #gls("smhdt", long: true)
 
 Going on, the Two-Metric Helper Data Method can be generalized as shown in @smhd. 
 This generalization allows for higher-order bit quantization and the use of more than two metrics. 
@@ -253,8 +254,8 @@ For application, we calculate $phi$ based on $S$ and $M$ using @eq:offset. The r
 )<alg:find_offsets>
 
 ==== Offset properties<par:offset_props>
-#inline-note[Diese section ist hier etwas fehl am Platz, ich weiß nur nicht genau wohin damit. Außerdem ist sie ein bisschen durcheinander geschrieben]
-Lets look deeper into the properties of the offset value $phi$.\
+//#inline-note[Diese section ist hier etwas fehl am Platz, ich weiß nur nicht genau wohin damit. Außerdem ist sie ein bisschen durcheinander geschrieben]
+Before we go on and experimentally test this realization of the S-Metric method, let's look deeper into the properties of the metric offset value $phi$.\
 Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their respective values of @eq:offset, we can observe, that the offset $Phi$ gets smaller the more metrics we use.
 
 #figure(
@@ -268,10 +269,10 @@ Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their r
   ),
   caption: [Offset values for 2-bit configurations]
 )<tab:offsets>
-As previously stated, we will need to move the enrollment quantizer $s/2$ times to the left and $s/2$ times to the right. 
-For example, setting parameter $s$ to $4$ means we will need to move the enrollment quantizer $lr(s/2 mid(|))_(s=4) = 2$ times to the left and right. 
-As we can see in @fig:4_2_offsets, $phi$ for the indices $i = plus.minus 2$ are identical to the offsets of a 2-bit 2-metric configuration.
-In fact, this property carries on for higher even numbers of metrics.
+As previously stated, we will need to define $S$ quantizers, $S/2$ times to the left and $S/2$ times to the right. 
+For example, setting parameter $S$ to $4$ means we will need to move the enrollment quantizer $lr(S/2 mid(|))_(S=4) = 2$ times to the left and right. 
+As we can see in @fig:4_2_offsets, $phi$ for the maximum metric indices $i = plus.minus 2$ are identical to the offsets of a 2-bit 2-metric configuration.
+In fact, this property carries on for higher even numbers of metrics, as shown in @fig:6_2_offsets. 
 
 #grid(
   columns: (1fr, 1fr),
@@ -301,43 +302,45 @@ In fact, this property carries on for higher even numbers of metrics.
 ]
 )
 
-At $s=6$ metrics, the biggest offset we encounter is $phi = 1/16$ at $i = plus.minus 3$.\
-In conclusion, the maximum offset for a 2-bit configuration $phi$ is $1/16$ and we will introduce smaller offsets in between if we use a higher even number of metrics. More formally, we can define the maximum offset for an even number of metrics as follows: 
-$ phi_("max,even") = frac(frac(s,2), 2^n dot s dot 2) = frac(1, 2^n dot 4) $<eq:max_offset_even>
+At $s=6$ metrics, the biggest metric offset we encounter is $phi = 1/16$ at $i = plus.minus 3$.\
+This biggest (or maximum) offset is of particular interest to us, as it tells us how far we deviate from the original quantizer used during enrollment. 
+The maximum offset for a 2-bit configuration $phi$ is $1/16$ and we will introduce smaller offsets in between if we use a higher even number of metrics.
 
-Here, we multiply @eq:offset with the maximum offsetting index $i_"max" = s/2$.
+More formally, we can define the maximum metric offset for an even number of metrics as follows: 
+$ phi_("max,even") = frac(frac(S,2), 2^M dot S dot 2) = frac(1, 2^M dot 4) $<eq:max_offset_even>
+
+Here, we multiply @eq:offset by the maximum metric index $i_"max" = S/2$.
 
 Now, if we want to find the maximum offset for a odd number of metrics, we need to modify @eq:max_offset_even, more specifically its numerator. 
-We know, that we need to keep the original quantizer for a odd number of metrics.
-Besides that, the method stays the same. 
 For that reason, we will decrease the parameter $m$ by $1$, that way we will still perform a division without remainder:
 
 $
-phi_"max,odd" &= frac(frac(s-1, 2), 2^n dot s dot 2)\
-&= lr(frac(s-1, 2^n dot s dot 4)mid(|))_(n=2, s=3) = 1/24
+phi_"max,odd" &= frac(frac(S-1, 2), 2^n dot S dot 2)\
+&= lr(frac(S-1, 2^M dot S dot 4)mid(|))_(M=2, S=3) = 1/24
 $
 
-It is important to note, that $phi_"max,odd"$, unlike $phi_"max,even"$, is dependent on the parameter $s$ as we can see in @tb:odd_offsets.
+It is important to note, that $phi_"max,odd"$, unlike $phi_"max,even"$, is dependent on the parameter $S$ as we can see in @tb:odd_offsets.
 
 #figure(
   table(
     columns: (5),
     align: center + horizon, 
     inset: 7pt,
-    [*s*],[3],[5],[7],[9],
+    [*S*],[3],[5],[7],[9],
     [$bold(phi_"max,odd")$],[$1/24$],[$1/20$],[$3/56$],[$1/18$]
   ),
   caption: [2-bit maximum offsets, odd]
 )<tb:odd_offsets>
 
-The higher $m$ is chosen, the closer we approximate $phi_"max,even"$ as shown in @eq:offset_limes. 
-This means, while also keeping the original quantizer during the reconstruction phase, the maximum offset for an odd number of metrics will always be smaller than for an even number. 
-//We will be able to observe this property later on in 
+The higher $S$ is chosen, the closer we approximate $phi_"max,even"$ as shown in @eq:offset_limes. 
+This means, while also keeping the original quantizer during the reconstruction phase, the maximum offset for an odd number of metrics will always be smaller than for an even number.
 
 $
-lim_(s arrow.r infinity) phi_"max,odd" &= frac(s-1, 2^n dot s dot 4) #<eq:offset_limes>\
-&= frac(1, 2^n dot 4) = phi_"max,even" 
+lim_(S arrow.r infinity) phi_"max,odd" &= frac(S-1, 2^M dot S dot 4) #<eq:offset_limes>\
+&= frac(1, 2^M dot 4) = phi_"max,even" 
 $
+
+Because $phi_"max,odd"$ only approximates $phi_"max,even"$ if $S arrow.r infinity$ we can assume, that configurations with an even number of metrics will always perform marginally better than configurations with odd numbers of metrics because the bigger maximum offset allows for better reconstructing capabilities. //#margin-note[Sehr unglücklich mit der formulierung hier]
 
 == Improvements<sect:smhd_improvements>
 
@@ -348,10 +351,12 @@ The by @smhd proposed S-Metric Helper Data Method can be improved by using gray 
   include("../graphics/quantizers/two-bit-enroll-gray.typ"),
   caption: [Gray Coded 2-bit quantizer]
 )<fig:2-bit-gray>]]
-@fig:2-bit-gray shows a 2-bit quantizer with gray coded labelling.
+@fig:2-bit-gray shows a 2-bit quantizer with gray-coded labelling.
 In this example, we have an advantage at $tilde(x) = ~ 0.5$, because a quantization error only returns one wrong bit instead of two.
 
-== Helper data volume
+Furthermore, the transformation into the Tilde-Domain could also be performed using the @ecdf to achieve a more precise uniform distribution because we do not have to estimate a standard deviation of the input values.
+
+//#inline-note[Hier vielleicht noch eine Grafik zur Visualisierung?]
 
 == Experiments
 
@@ -369,7 +374,7 @@ For this analysis, enrollment and reconstruction were both performed at room tem
 
 #figure(
   image("../graphics/25_25_all_error_rates.svg", width: 95%),
-  caption: [Bit error rates for same temperature execution]
+  caption: [Bit error rates for same temperature execution. Here we can already observe the asymptotic loss of improvement in #glspl("ber") for higher metric numbers]
 )<fig:global_errorrates>
 
 We can observe two key properties of the S-Metric method in @fig:global_errorrates.
@@ -380,7 +385,7 @@ At a symbol width of $m >= 6$ bits, no further improvement through the S-Metric 
 
 #figure(
   include("../graphics/plots/errorrates_changerate.typ"),
-  caption: [Asymptotic performance of S-Metric]
+  caption: [Asymptotic performance of @smhdt]
 )<fig:errorrates_changerate>
 
 This tendency can also be shown through @fig:errorrates_changerate. 
@@ -405,34 +410,25 @@ Since we wont always be able to recreate lab-like conditions during the reconstr
 
 #figure(
   include("../graphics/plots/temperature/25_5_re.typ"),
-  caption: [Reconstruction at different temperatures]
+  caption: [#glspl("ber") for reconstruction at different temperatures. Generally, the further we move away from the enrollment temperature, the worse the #gls("ber") gets. ]
 )<fig:smhd_tmp_reconstruction>
 
 @fig:smhd_tmp_reconstruction shows the results of this experiment conducted with a 2-bit configuration.\
 As we can see, the further we move away from the temperature of enrollment, the higher the bit error rates turns out to be.\
-Going more into detail, we can look at the exact bit error rates in @tab:smhd_tmp_differences.
 
+We can observe this property well in detail in @fig:global_diffs.
+
+#scale(x: 90%, y: 90%)[
 #figure(
-  table(
-    columns: (4),
-    align: center + horizon, 
-    inset: 7pt,
-    [*Temperature*], [*No helper data*],[*Two-Metric*],[*s=100 Metric*],
-    [-20°C], [$3.9 dot 10^(-2)$], [$2.1 dot 10^(-3)$], [$1.5 dot 10^(-4)$],
-    [-10°C], [$3.7 dot 10^(-2)$], [$1.4 dot 10^(-3)$], [$0.8 dot 10^(-4)$],
-    [$plus.minus 0$°C], [$2 dot 10^(-2)$], [$0.008 dot 10^(-3)$], [$0.035 dot 10^(-4)$],
-    [+10°C], [$3.7 dot 10^(-2)$], [$1.3 dot 10^(-3)$], [$0.6 dot 10^(-4)$],
-    [+20°C], [$4.4 dot 10^(-2)$], [$3.1 dot 10^(-3)$], [$3.5 dot 10^(-4)$],
-    [+30°C], [$5.2 dot 10^(-2)$], [$7 dot 10^(-3)$], [$15 dot 10^(-4)$],
-  ),
-  caption: [BERs 2-bit configuration at 25°C enrollment]
-)<tab:smhd_tmp_differences>
+ include("../graphics/plots/temperature/global_diffs/global_diffs.typ"),
+  caption: [#glspl("ber") for different enrollment and reconstruction temperatures. The lower number in the operating configuration is assigned to the enrollment phase, the upper one to the reconstruction phase. The correlation between the #gls("ber") and the temperature is clearly visible here]
+)<fig:global_diffs>]
 
-Comparing the absolute temperature difference pairs of @tab:smhd_tmp_differences, we can generally conclude, that a higher temperature during reconstruction has a higher impact on the bit error rate than a lower one.
-
+Here, we compared the asymptotic performance of @smhdt for different temperatures both during enrollment and reconstruction. First we can observe that the optimum temperature for the operation of @smhdt in both phases for the dataset @dataset is $35°C$.
+Furthermore, the @ber is almost directly correlated with the absolute temperature difference, especially at higher temperature differences, showing that the further apart the temperatures of the two phases are, the higher the @ber.
 
 === Gray coding
 
 In @sect:smhd_improvements, we discussed how a gray coded labelling for the quantizer could improve the bit error rates of the S-Metric method.
 
-#inline-note[Hier: auch Auswertung über die Temperatur, oder kann man die eigenschaften einfach übernehmen aus der vorherigen Section? (Sie translaten einfach)]
+//#inline-note[Hier: auch Auswertung über die Temperatur, oder kann man die eigenschaften einfach übernehmen aus der vorherigen Section? (Sie translaten einfach)]

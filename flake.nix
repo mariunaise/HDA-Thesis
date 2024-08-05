@@ -43,6 +43,10 @@
       devShell = pkgs.mkShell {
         buildInputs = with pkgs; [
           typst
+          python312
+          python312Packages.pandas
+          python312Packages.glob2
+          python312Packages.matplotlib
         ];
       };
 

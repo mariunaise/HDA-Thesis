@@ -18,7 +18,7 @@ df = pd.DataFrame(data)
 df['BER'] = df['BER'].apply(lambda x: '{:.10f}'.format(x))
 
 # Save to CSV
-file_path = "sorted_configurations_with_diff.csv"
+file_path = "sorted_configurations_with_diff_header.csv"
 df.to_csv(file_path, index=False)
 
 file_path

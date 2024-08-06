@@ -366,6 +366,8 @@ Because we want to analyze the performance of the S-Metric method over different
 We will have measurements of $50$ FPGA boards available with $1600$ and $1696$ ring oscillators each. To obtain the values to be processed, we subtract them in pairs, yielding $800$ and $848$ ring oscillator frequency differences _df_.\ 
 Since the frequencies _f_ are normal distributed, the difference _df_ can be assumed to be zero-mean Gaussian distributed.
 To apply the values _df_ to our implementation of the S-Metric method, we will first transform them into the Tilde-Domain using an inverse CDF, resulting in uniform distributed values $tilde(italic("df"))$.
+Our resulting dataset consists of #glspl("ber") for quantization symbol widths of up to $6 "bits"$ evaluated with generated helper-data from up to $100 "metrics"$.
+We chose not to perform simulations for bit widths higher than $6 "bits"$, as we will see later that we have already reached a bit error rate of approx. $10%$ for these configurations.
 
 === Discussion
 
@@ -401,7 +403,7 @@ From $m >= 6$ onwards, $(x_"1" (m)) / (x_"100" (m))$ approaches $~1$, which mean
 //  caption: [Yoink]
 //)
 
-=== Impact of temperature
+=== Impact of temperature<sect:impact_of_temperature>
 
 We will now take a look at the impact on the error rates of changing the temperature both during the enrollment and the reconstruction phase.
 
@@ -424,11 +426,42 @@ We can observe this property well in detail in @fig:global_diffs.
   caption: [#glspl("ber") for different enrollment and reconstruction temperatures. The lower number in the operating configuration is assigned to the enrollment phase, the upper one to the reconstruction phase. The correlation between the #gls("ber") and the temperature is clearly visible here]
 )<fig:global_diffs>]
 
-Here, we compared the asymptotic performance of @smhdt for different temperatures both during enrollment and reconstruction. First we can observe that the optimum temperature for the operation of @smhdt in both phases for the dataset @dataset is $35°C$.
-Furthermore, the @ber is almost directly correlated with the absolute temperature difference, especially at higher temperature differences, showing that the further apart the temperatures of the two phases are, the higher the @ber.
+Here, we compared the asymptotic performance of @smhdt for different temperatures both during enrollment and reconstruction. First we can observe that the optimum temperature for the operation of @smhdt in both phases for the dataset @dataset is $35°C$ instead of the expected $25°C$.
+Furthermore, the @ber seems to be almost directly correlated with the absolute temperature difference, especially at higher temperature differences, showing that the further apart the temperatures of the two phases are, the higher the @ber.
 
 === Gray coding
 
 In @sect:smhd_improvements, we discussed how a gray coded labelling for the quantizer could improve the bit error rates of the S-Metric method.
 
-//#inline-note[Hier: auch Auswertung über die Temperatur, oder kann man die eigenschaften einfach übernehmen aus der vorherigen Section? (Sie translaten einfach)]
+Because we only change the labelling of the quantizing bins and do not make any changes to #gls("smhdt") itself, we can assume that the effects of temperature on the quantization process are directly translated to the gray-coded case.
+Therefore, we will not perform this analysis again here.
+
+@fig:smhd_gray_coding shows the comparison of applying #gls("smhdt") at room temperature for both naive and gray-coded labels.
+There we can already observe the improvement of using gray-coded labelling, but the impact of this change of labels can really be seen in @tab:gray_coded_impact.
+As we can see, the improvement rises rapidly to a peak at a bit width of M=3 and then falls again slightly.
+This effect can be explained with the exponential rise of the #gls("ber") for higher bit widths $M$. 
+For $M>3$ the rise of the #gls("ber") predominates the possible improvement by applying a gray-coded labelling.
+
+#figure(
+  table(
+    columns: (7),
+    align: center + horizon, 
+    inset: 7pt,
+    [*M*],[1],[2],[3],[4], [5], [6],
+    [*Improvement*], [$0%$], [$24.75%$], [$47.45%$], [$46.97%$], [$45.91%$], [$37.73%$]
+  ),
+  caption: [Improvement of using gray-coded instead of naive labelling, per bit width]
+)<tab:gray_coded_impact>
+
+#figure(
+  image("./../graphics/plots/gray_coding/3dplot.svg"),
+  caption: [Comparison between #glspl("ber") using naive labelling and gray-coded labelling]
+)<fig:smhd_gray_coding>
+
+Using our dataset, we can estimate the average improvement for using gray-coded labelling to be at around $33%$.
+
+=== Usage of an @ecdf
+
+- eCDF kann die Gleichverteilung der quantisierten Symbole verbessern, da keine standardabweichung geschätzt werden muss, dafür komplexer zum ausrechnen
+- Vergleich mit zwei histogrammen für die Gleichverteilung der Symbole? 
+- BER auswerten, ist wahrscheinlich schlechter

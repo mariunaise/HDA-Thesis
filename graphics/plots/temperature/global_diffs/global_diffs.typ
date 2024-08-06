@@ -32,7 +32,7 @@
     y-format: formatter,
     y-tick-step: 0.5,
     axis-style: "scientific-auto",
-    size: (16,8),
+    size: (16,6),
     plot.add(errorrate, axes: ("x", "y"), style: (stroke: (paint: red))),
     plot.add-hline(1)
   )
@@ -41,7 +41,7 @@
     y2-label: "Temperature difference",
     y2-tick-step: 10,
     axis-style: "scientific-auto",
-    size: (16,8),
+    size: (16,6),
     plot.add(diff, axes: ("x1","y2")),
   )
 })

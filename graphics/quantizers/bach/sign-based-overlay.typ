@@ -1,4 +1,6 @@
-#import "@preview/cetz:0.2.2": canvas, plot
+#import "@preview/cetz:0.2.2": *
+
+
 
 #let line_style = (stroke: (paint: black, thickness: 2pt))
 #let dashed = (stroke: (dash: "dashed"))
@@ -15,7 +17,11 @@
     y-min: 0,
     y-max: 1,{
     plot.add(((-3,0), (0,0), (0,1), (3,1)), style: line_style)
-
+    plot.add(plot.sample-fn(
+  (x) => 1/calc.sqrt(2*calc.pi)*calc.exp(-(calc.pow(x,2)/2)),
+  (-3, 3),
+  300 
+))
     
   })
 })

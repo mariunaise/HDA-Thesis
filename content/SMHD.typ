@@ -365,11 +365,11 @@ The dataset contains counts of positives edges of a toggle flip flop at a set ev
 Because we want to analyze the performance of the S-Metric method over different temperatures, both during enrollment and reconstruction, we are limited to the second part of the experimental measurements of @dataset. 
 We will have measurements of $50$ FPGA boards available with $1600$ and $1696$ ring oscillators each. To obtain the values to be processed, we subtract them in pairs, yielding $800$ and $848$ ring oscillator frequency differences _df_.\ 
 Since the frequencies _f_ are normal distributed, the difference _df_ can be assumed to be zero-mean Gaussian distributed.
-To apply the values _df_ to our implementation of the S-Metric method, we will first transform them into the Tilde-Domain using an inverse CDF, resulting in uniform distributed values $tilde(italic("df"))$.
+To apply the values _df_ to our implementation of the S-Metric method, we will first transform them into the Tilde-Domain using an inverse CDF, resulti/invite <mxid>ng in uniform distributed values $tilde(italic("df"))$.
 Our resulting dataset consists of #glspl("ber") for quantization symbol widths of up to $6 "bits"$ evaluated with generated helper-data from up to $100 "metrics"$.
 We chose not to perform simulations for bit widths higher than $6 "bits"$, as we will see later that we have already reached a bit error rate of approx. $10%$ for these configurations.
 
-=== Discussion
+=== Results & Discussion
 
 The bit error rate of different S-Metric configurations for naive labelling can be seen in @fig:global_errorrates.
 For this analysis, enrollment and reconstruction were both performed at room temperature and the quantizer was naively labelled. 
@@ -394,14 +394,9 @@ This tendency can also be shown through @fig:errorrates_changerate.
 Here, we calculated the quotient of the bit error rate using one metric and 100 metrics.
 From $m >= 6$ onwards, $(x_"1" (m)) / (x_"100" (m))$ approaches $~1$, which means, no real improvement is possible anymore through the S-Metric method.
 
-//=== Observation of offset $phi$ 
+=== Helper Data Volume Trade-off
 
-//If we take a look at the 1-bit case, we can nicely observe the approximating nature of $phi_"max,odd"$ to $phi_"max,even"$ of @par:offset_props.
 
-//#figure(
-//  include("../graphics/plots/1bit_obs.typ"),
-//  caption: [Yoink]
-//)
 
 === Impact of temperature<sect:impact_of_temperature>
 

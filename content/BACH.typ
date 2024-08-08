@@ -12,6 +12,8 @@ Before we take a look at the higher order quantization cases, we will start with
 
 #figure(
   include("./../graphics/quantizers/bach/sign-based-overlay.typ"),
-  caption: [Nice graph]
-)
+  caption: [1-bit quantizer with the PDF of a normal distribution]
+)<fig:1-bit_normal>
 
+If we overlay the PDF of a zero-mean Gaussian distributed variable $X$ with a sign-based quantizer function as shown in @fig:1-bit_normal, we can see that the expected value of the Gaussian distribution overlaps with the decision threshold of the sign-based quantizer.
+Considering that the margin of error of the value $x$ is comparable with the one shown in @fig:tmhd_example_enroll, we can conclude that values of $X$ 

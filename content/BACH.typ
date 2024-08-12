@@ -1,8 +1,8 @@
-#import "@preview/glossarium:0.4.1": * 
+#import "@preview/glossarium:0.4.1": *
 
 = Boundary Adaptive Clustering with Helper Data
 
-Instead of generating helper-data to improve the quantization process itself, like in #gls("smhdt"), we can also try to find helper-data before performing enrollment that will optimize our input values before the quantization step to minimize the risk of bit and symbol errors during the reconstruction phase. 
+Instead of generating helper-data to improve the quantization process itself, like in #gls("smhdt"), or using some kind of error correcting code after the quantization process, we can also try to find helper-data before performing the quantization that will optimize our input values before quantizing them to minimize the risk of bit and symbol errors during the reconstruction phase. 
 
 Since this #gls("hda") modifies the input values before the quantization takes place, we will consider the input values as zero-mean Gaussian distributed and not use a CDF to transform these values into the tilde-domain.
 
@@ -20,17 +20,71 @@ Considering that the margin of error of the value $x$ is comparable with the one
 This means that the quantizer used here is very unreliable without generated helper-data.
 
 Now, to increase the reliability of this quantizer, we can try to move our input values further away from the value $x = 0$. 
-To do so, we can define a new input value $x^"lin"$ as a linear combination of two realizations of $X$, $x_1$ and $x_2$ with a set of weights $h_1$ and $h_2$: 
+To do so, we can define a new input value $z$ as a linear combination of two realizations of $X$, $x_1$ and $x_2$ with a set of weights $h_1$ and $h_2$: 
 $
-x^"lin" = h_1 dot x_1 + h_2 dot x_2 .
+z = h_1 dot x_1 + h_2 dot x_2 .
 $<eq:lin_combs>
-We can define the vector of all possible linear combinations $bold(x^"lin")$ as the vector-matrix multiplication of the two input values $x_i$ and the matrix of all weight combinations: 
+
+=== Derivation of the resulting distribution
+
+To find a description for the random distribution $Z$ of $z$ we can interpret this process mathematically as a maximisation of a sum.
+This can be realized by replacing the values of $x_i$ with their absolute values:
 $
-bold(x^"lin") &= vec(x_1, x_2) dot mat(delim: "[", h_1, -h_1, h_1, -h_1; h_2, h_2, -h_2, -h_2)\
+z = abs(x_1) + abs(x_2) 
+$
+Taking into account, that $x_i$ are realizations of a normal distribution -- that we can assume without loss of generality to have its expected value at $x=0$ and a standard deviation of $sigma = 1$ -- we can define the overall resulting random distribution $Z$ to be: 
+$
+Z = abs(X) + abs(X).
+$<eq:z_distribution>
+We will redefine $abs(X)$ as a half-normal distribution $Y$ whose PDF is
+$
+f_Y(y, sigma) &= frac(sqrt(2), sigma sqrt(pi)) lr(exp(-frac(y^2, 2 sigma^2)) mid(|))_(sigma = 1), y >= 0 \
+&= sqrt(frac(2, pi)) exp(- frac(y^2, sigma^2)) .
+$<eq:half_normal>
+Now, $Z$ simplifies to 
+$
+Z = Y + Y.
+$
+We can assume that the realizations of $Y$ are independent of each other. 
+The PDF of the addition of these two distributions can be described through the convolution of their respective PDFs: 
+$
+f_Z(z) &= integral_0^z f_Y (y) f_Y (z-y) \dy\
+&= integral_0^z [sqrt(2/pi) exp(-frac(y^2,2)) sqrt(2/pi) exp(-frac((z-x)^2, 2))] \dx\
+&= 2/pi integral_0^z exp(- frac(x^2 + (z-x)^2, 2)) \dx #<eq:z_integral>
+$
+Evaluating the integral of @eq:z_integral, we can now describe the resulting distribution of this maximisation process analytically:
+$
+f_Z = 2/sqrt(pi) exp(-frac(2^2, 4)) "erf"(z/2) z >= 0.
+$<eq:z_result>
+Our derivation of $f_Z$ currently only accounts for the addition of positive values of $x_i$, but two negative $x_i$ values would also return the maximal distance to the coordinate origin.
+The derivation for the corresponding PDF is identical, except that the half-normal distribution @eq:half_normal is mirrored around the y-axis.
+Because the resulting PDF $f_Z^"neg"$ is a mirrored variant of $f_Z$ and $f_Z$ is symmetrical arranged around the origin, we can define a new PDF $f_Z^*$ as 
+$
+f_Z^* (z) = abs(f_Z (z)),
+$
+on the entire z-axis.
+$f_Z^* (z)$ now describes the final random distribution after the application of our optimization of the input values $x_i$.
+#figure(
+  include("../graphics/plots/z_distribution.typ"),
+  caption: [Optimized input values $z$ overlaid with sign-based quantizer $cal(Q)$]
+)<fig:z_pdf>
+
+@fig:z_pdf shows two key properties of this optimization:
+1. Adjusting the input values using the method described above does not require any adjustment of the decision threshold of the sign-based quantizer.
+2. The resulting PDF 
+
+=== Generating helper-data
+
+To find the optimal set of helper-data that will result in the distribution shown in @fig:z_pdf, we can define the vector of all possible linear combinations $bold(z)$ as the vector-matrix multiplication of the two input values $x_i$ and the matrix of all weight combinations: 
+$
+bold(z) &= vec(x_1, x_2) dot mat(delim: "[", h_1, -h_1, h_1, -h_1; h_2, h_2, -h_2, -h_2)\
 &= vec(x_1, x_2) dot mat(delim: "[", +1, -1, +1, -1; +1, +1, -1, -1)
 $
-We will choose the optimal weights based on the highest absolute value of $bold(x^"lin")$, as that value will be the furthest away from $0$. 
-We may encounter two entries in $bold(x^"lin")$ that both have the same highest absolute value.
+We will choose the optimal weights based on the highest absolute value of $bold(z)$, as that value will be the furthest away from $0$. 
+We may encounter two entries in $bold(z)$ that both have the same highest absolute value.
+In that case, we will choose the combination of weights randomly out of our possible options.
 
-Lets take a look at the resulting random distribution of this process: 
+If we take a look at the dimensionality of the matrix of all weight combinations, we notice that we will need to store $log_2(2) = 1$ helper-data bit.
+In fact, we will show later, that the amount of helper-data bits used by this HDA is directly linked to the number of input values used instead of the number of bits we want to extract during quantization.
+
 

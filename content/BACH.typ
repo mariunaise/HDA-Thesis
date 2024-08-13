@@ -6,7 +6,7 @@ Instead of generating helper-data to improve the quantization process itself, li
 
 Since this #gls("hda") modifies the input values before the quantization takes place, we will consider the input values as zero-mean Gaussian distributed and not use a CDF to transform these values into the tilde-domain.
 
-== Optimizing a 1-bit sign-based quantization
+== Optimizing a 1-bit sign-based quantization<sect:1-bit-opt>
 
 Before we take a look at the higher order quantization cases, we will start with a very basic method of quantization: a quantizer, that only returns a symbol with a width of $1$ bit and uses the sign of the input value to determine the resulting bit symbol.
 
@@ -28,7 +28,7 @@ $<eq:lin_combs>
 === Derivation of the resulting distribution
 
 To find a description for the random distribution $Z$ of $z$ we can interpret this process mathematically as a maximisation of a sum.
-This can be realized by replacing the values of $x_i$ with their absolute values:
+This can be realized by replacing the values of $x_i$ with their absolute values as this always gives us the maximum value of the sum:
 $
 z = abs(x_1) + abs(x_2) 
 $
@@ -45,20 +45,20 @@ Now, $Z$ simplifies to
 $
 Z = Y + Y.
 $
-We can assume that the realizations of $Y$ are independent of each other. 
+We can assume for now that the realizations of $Y$ are independent of each other.
 The PDF of the addition of these two distributions can be described through the convolution of their respective PDFs: 
 $
 f_Z(z) &= integral_0^z f_Y (y) f_Y (z-y) \dy\
-&= integral_0^z [sqrt(2/pi) exp(-frac(y^2,2)) sqrt(2/pi) exp(-frac((z-x)^2, 2))] \dx\
-&= 2/pi integral_0^z exp(- frac(x^2 + (z-x)^2, 2)) \dx #<eq:z_integral>
+&= integral_0^z [sqrt(2/pi) exp(-frac(y^2,2)) sqrt(2/pi) exp(-frac((z-y)^2, 2))] \dy\
+&= 2/pi integral_0^z exp(- frac(y^2 + (z-y)^2, 2)) \dy #<eq:z_integral>
 $
 Evaluating the integral of @eq:z_integral, we can now describe the resulting distribution of this maximisation process analytically:
 $
-f_Z = 2/sqrt(pi) exp(-frac(2^2, 4)) "erf"(z/2) z >= 0.
+f_Z = 2/sqrt(pi) exp(-frac(z^2, 4)) "erf"(z/2) z >= 0.
 $<eq:z_result>
 Our derivation of $f_Z$ currently only accounts for the addition of positive values of $x_i$, but two negative $x_i$ values would also return the maximal distance to the coordinate origin.
 The derivation for the corresponding PDF is identical, except that the half-normal distribution @eq:half_normal is mirrored around the y-axis.
-Because the resulting PDF $f_Z^"neg"$ is a mirrored variant of $f_Z$ and $f_Z$ is symmetrical arranged around the origin, we can define a new PDF $f_Z^*$ as 
+Because the resulting PDF $f_Z^"neg"$ is a mirrored variant of $f_Z$ and $f_Z$ is arranged  symmetrically around the origin, we can define a new PDF $f_Z^*$ as 
 $
 f_Z^* (z) = abs(f_Z (z)),
 $
@@ -71,7 +71,7 @@ $f_Z^* (z)$ now describes the final random distribution after the application of
 
 @fig:z_pdf shows two key properties of this optimization:
 1. Adjusting the input values using the method described above does not require any adjustment of the decision threshold of the sign-based quantizer.
-2. The resulting PDF 
+2. The resulting PDF is zero at $z = 0$ leaving no input value for the sign-based quantizer at its decision threshold. 
 
 === Generating helper-data
 
@@ -82,9 +82,19 @@ bold(z) &= vec(x_1, x_2) dot mat(delim: "[", h_1, -h_1, h_1, -h_1; h_2, h_2, -h_
 $
 We will choose the optimal weights based on the highest absolute value of $bold(z)$, as that value will be the furthest away from $0$. 
 We may encounter two entries in $bold(z)$ that both have the same highest absolute value.
-In that case, we will choose the combination of weights randomly out of our possible options.
+In that case, we will choose the combination of weights randomly out of our possible options. 
 
 If we take a look at the dimensionality of the matrix of all weight combinations, we notice that we will need to store $log_2(2) = 1$ helper-data bit.
 In fact, we will show later, that the amount of helper-data bits used by this HDA is directly linked to the number of input values used instead of the number of bits we want to extract during quantization.
+
+== Extension to higher-order bit quantization
+
+We can generalize the idea of @sect:1-bit-opt and apply it for a higher-order bit quantization.
+Contrary to @smhdt, we will always use the same step function as quantizer and optimize the input values $x$ to be the furthest away from any decision threshold.
+In this higher-order case, this means that we want to optimise out input values as close as possible to the middle of a quantizer step or as far away as possible from a decision threshold of the quantizer instead of just maximising the absolute value of the linear combination. 
+
+Two different strategies to find a fitting linear combination emerge from this premise: 
+1. Finding the linear combination that best approximates the center of a quantizer step, since these points are the furthest away from any decision threshold.
+2. Approximating the point that is the furthest away directly through finding the linear combination with the minimum distance to a decision threshold is maximised.
 
 

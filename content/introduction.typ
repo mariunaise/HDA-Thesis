@@ -8,7 +8,8 @@ To ensure a consistent notation of functions and ideas, we will now introduce so
 
 Random distributed variables will be notated with a capital letter, i.e. $X$, its realization will be the corresponding lower case letter, $x$.
 
-Vectors will be written in bold test: $bold(k)$ represents a vector of quantized symbols.
+Vectors will be written in bold text: $bold(k)$ represents a vector of quantized symbols.
+Matrices are denoted with a bold capital letter: $bold(M)$
 
 We will call a quantized symbol $k$. $k$ consists of all possible binary symbols, i.e. $0, 01, 110$.
 

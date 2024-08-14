@@ -75,9 +75,10 @@ $f_Z^* (z)$ now describes the final random distribution after the application of
 
 === Generating helper-data
 
-To find the optimal set of helper-data that will result in the distribution shown in @fig:z_pdf, we can define the vector of all possible linear combinations $bold(z)$ as the vector-matrix multiplication of the two input values $x_i$ and the matrix of all weight combinations: 
+To find the optimal set of helper-data that will result in the distribution shown in @fig:z_pdf, we can define the vector of all possible linear combinations $bold(z)$ as the vector-matrix multiplication of the two input values $x_i$ and the matrix $bold(H)$ of all weight combinations: 
 $
-bold(z) &= vec(x_1, x_2) dot mat(delim: "[", h_1, -h_1, h_1, -h_1; h_2, h_2, -h_2, -h_2)\
+bold(z) &= bold(x) dot bold(H)\
+&= vec(x_1, x_2) dot mat(delim: "[", h_1, -h_1, h_1, -h_1; h_2, h_2, -h_2, -h_2)\
 &= vec(x_1, x_2) dot mat(delim: "[", +1, -1, +1, -1; +1, +1, -1, -1)
 $
 We will choose the optimal weights based on the highest absolute value of $bold(z)$, as that value will be the furthest away from $0$. 
@@ -87,14 +88,38 @@ In that case, we will choose the combination of weights randomly out of our poss
 If we take a look at the dimensionality of the matrix of all weight combinations, we notice that we will need to store $log_2(2) = 1$ helper-data bit.
 In fact, we will show later, that the amount of helper-data bits used by this HDA is directly linked to the number of input values used instead of the number of bits we want to extract during quantization.
 
-== Extension to higher-order bit quantization
+== Generalization to higher-order bit quantization
 
 We can generalize the idea of @sect:1-bit-opt and apply it for a higher-order bit quantization.
 Contrary to @smhdt, we will always use the same step function as quantizer and optimize the input values $x$ to be the furthest away from any decision threshold.
-In this higher-order case, this means that we want to optimise out input values as close as possible to the middle of a quantizer step or as far away as possible from a decision threshold of the quantizer instead of just maximising the absolute value of the linear combination. 
+In this higher-order case, this means that we want to optimise out input values as close as possible to the middle of a quantizer step or as far away as possible from a decision threshold of the quantizer instead of just maximising the absolute value of the linear combination.
 
-Two different strategies to find a fitting linear combination emerge from this premise: 
-1. Finding the linear combination that best approximates the center of a quantizer step, since these points are the furthest away from any decision threshold.
-2. Approximating the point that is the furthest away directly through finding the linear combination with the minimum distance to a decision threshold is maximised.
+Two different strategies to find the linear combination arise from this premise: 
+1. *Center point approximation*: Finding the linear combination that best approximates the center of a quantizer step, since these points are the furthest away from any decision threshold.
+2. *Maximum quantizing bound distance approximation*:Approximating the point that is the furthest away directly through finding the linear combination with the maximum minimum distance to a decision threshold.
+
+Although different in there respective implementations, both of these strategies aim to find a combination of helper-data that will best approximate one point out of a set of optimal points for $z$.
+Thus we will define a vector $bold(cal(o)) in.rev {cal(o)_1, cal(o)_2 ..., cal(o)_(2^M)}$ containing the optimal values that we want to approximate with $z$.
+Its cardinality is $2^M$, while $M$ defines the number of bits we want to extract through the quantization.
+It has to be noted, that $bold(cal(o))$ consists of optimal values that we may not be able to exactly approximate using a linear combination based on weights and our given input values. 
+
+In comparison to the 1-bit sign-based quantization, we will not be able to find a linear combination of only two input values that approximates the optimal points we defined earlier.
+Therefore, we will use -- without any loss of generality -- three summands for the linear combination as this give us more flexible control over the result of the linear combination with the helper data. 
+Later we will be able to show that a higher number of summands for $z$ can provide better approximations for the ideal values of $z$ at the expense of the number of available input values for the quantizer. 
+
+We will define $z$ from now on as:
+$
+z = x_1 dot h_1 plus x_2 dot h_2 plus x_3 dot h_3.
+$
+
+We can now find the optimal linear combination $z_"opt"$ by finding the minimum of all distances to all optimal points defined as $bold(cal(o))$.
+The matrix that contains the distances of all linear combinations $bold(z)$ to all optimal points $bold(cal(o))$ is defined as: $bold(cal(A))$ with its entries $a_"ij" = abs(z_"i" - o_"j")$.\
+$z_"opt"$ can now be defined as the minimal value in $bold(cal(A))$:
+$
+z_"opt" = op("argmin")(bold(cal(A)))
+= op("argmin")(mat(delim: "[", a_("00"), ..., a_("i0"); dots.v, dots.down, " "; a_"0j", " ", a_"ij" )).
+$
+
+=== Algorithm definition
 
 

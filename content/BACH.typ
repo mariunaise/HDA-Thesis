@@ -110,7 +110,7 @@ Later we will be able to show that a higher number of summands for $z$ can provi
 We will define $z$ from now on as:
 $
 z = x_1 dot h_1 plus x_2 dot h_2 plus x_3 dot h_3.
-$
+$<eq:z_eq>
 
 We can now find the optimal linear combination $z_"opt"$ by finding the minimum of all distances to all optimal points defined as $bold(cal(o))$.
 The matrix that contains the distances of all linear combinations $bold(z)$ to all optimal points $bold(cal(o))$ is defined as: $bold(cal(A))$ with its entries $a_"ij" = abs(z_"i" - o_"j")$.\
@@ -119,7 +119,46 @@ $
 z_"opt" = op("argmin")(bold(cal(A)))
 = op("argmin")(mat(delim: "[", a_("00"), ..., a_("i0"); dots.v, dots.down, " "; a_"0j", " ", a_"ij" )).
 $
+#figure(
+  kind: "algorithm",
+  supplement: [Algorithm],
+  include("../pseudocode/bach_find_best_appr.typ")
+)<alg:best_appr>
 
-=== Algorithm definition
+@alg:best_appr shows a programmatic approach to find the set of weights for the best approximation. The algorithm returns a tuple consisting of the weight combination $bold(h)$ and the resulting value of the linear combination $z_"opt"$
+=== Realization of center point approximation
 
+As described earlier, we can define the ideal possible positions for the linear combination $z_"opt"$ to be the centers of the quantizer steps.
+Because the superposition of different linear combinations of normal distributions corresponds to a Gaussian Mixture Model, wherein finding the ideal set of points $bold(cal(o))$ analytically is impossible.
 
+Instead, we will first estimate $bold(cal(o))$ based on the normal distribution parameters after performing multiple convolutions with the input distribution $X$.
+The parameters of a multiple convoluted normal distribution is defined as: 
+$
+sum_(i=1)^(n) cal(N)(mu_i, sigma_i^2) tilde cal(N)(sum_(i=1)^n mu_i, sum_(i=1)^n sigma_i^2),
+$
+while $n$ defines the number of convolutions performed @schmutz.
+
+With this definition, we can define the parameters of the probability distribution $Z$ of the linear combinations $z$ based on the parameters of $X$, $mu_X$ and $sigma_X$: 
+
+$
+Z(mu_Z, sigma_Z^2) = Z(sum_(i=1^n) mu_X, sum_(i=1)^n sigma_X^2)
+$
+
+The parameters $mu_Z$ and $sigma_Z$ allow us to apply an inverse CDF on a multi-bit quantizer $cal(Q)(2, tilde(x))$ defined in the tilde-domain. 
+Our initial values for $bold(cal(o))_"first"$ can now be defined as the centers of the steps of the transformed quantizer function $cal(Q)(2, x)$.
+These points can be found easily but for the outermost center points whose quantizer steps have a bound $plus.minus infinity$.\
+However, we can still find these two remaining center points by artificially defining the outermost bounds of the quantizer as $frac(1, 2^M dot 4)$ and $frac((2^M dot 4)-1, 2^M dot 4)$ in the tilde-domain and also apply the inverse CDF to them. 
+
+#scale(x: 90%, y: 90%)[
+#figure(
+  include("../graphics/quantizers/two-bit-enroll-real.typ"),
+  caption: [Quantizer for the distribution resulting a triple convolution with distribution parameters $mu_X=0$ and $sigma_X=1$ with marked center points of the quantizer steps]
+)<fig:two-bit-enroll-find-centers>]
+
+We can now use an iterative algorithm that alternates between optimizing the quantizing bounds of $cal(Q)$ and our vector of optimal points $bold(cal(o))_"first"$.
+
+#figure(
+    kind: "algorithm",
+    supplement: [Algorithm],
+    include("../pseudocode/bach_1.typ")
+)

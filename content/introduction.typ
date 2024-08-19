@@ -1,3 +1,4 @@
+#import "@preview/glossarium:0.4.1": * 
 = Introduction
 
 These are the introducing words
@@ -39,6 +40,23 @@ This transformation can be performed using the function $xi = tilde(x)$. The key
 Considering a normal distribution, the CDF is defined as 
 $ xi(frac(x - mu, sigma)) = frac(1, 2)[1 + \e\rf(frac(x - mu, sigma sqrt(2)))] $
 
-==== ECDF
+==== #gls("ecdf", display: "Empirical cumulative distribution function (eCDF)")
 
-The eCDF is constructed through sorting the empirical measurements of a distribution @dekking2005modern. Although less accurate, this method allows a more simple and less computationally complex way to transform real valued measurements into the Tilde-Domain. We will mainly use the eCDF in @chap:smhd because of the difficulty of finding an analytical description for the CDF of a Gaussian-Mixture.
+The @ecdf is constructed through sorting the empirical measurements of a distribution @dekking2005modern. Although less accurate, this method allows a more simple and less computationally complex way to transform real valued measurements into the Tilde-Domain. We will mainly use the eCDF in @chap:smhd because of the difficulty of finding an analytical description for the CDF of a Gaussian-Mixture.\
+To apply it, we will sort the vector of realizations $bold(z)$ of a random distributed variable $Z$ in ascending order. 
+The function for an @ecdf can be defined as
+$
+xi_#gls("ecdf") (x) = frac("number of elements in " bold(z)", that" <= x, n) in [0, 1],
+$<eq:ecdf_def>
+where $n$ defines the number of elements in the vector $bold(z)$.
+If the vector $bold(z)$ were to contain the elements $[1, 3, 4, 5, 7, 9, 10]$ and $x = 5$, @eq:ecdf_def would result to $xi_#gls("ecdf") (5) = frac(4, 7)$.\
+The application of @eq:ecdf_def on $X$ will transform its values into the empirical tilde-domain.
+
+We can also define an inverse @ecdf: 
+
+$
+xi_#gls("ecdf")^(-1) (tilde(x)) =  tilde(x) dot n
+$<eq:ecdf_inverse>
+
+The result of @eq:ecdf_inverse is the index $i$ of the element $z_i$ from the vector of realizations $bold(z)$.
+

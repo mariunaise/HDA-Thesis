@@ -104,12 +104,12 @@ Its cardinality is $2^M$, while $M$ defines the number of bits we want to extrac
 It has to be noted, that $bold(cal(o))$ consists of optimal values that we may not be able to exactly approximate using a linear combination based on weights and our given input values. 
 
 In comparison to the 1-bit sign-based quantization, we will not be able to find a linear combination of only two input values that approximates the optimal points we defined earlier.
-Therefore, we will use -- without any loss of generality -- three summands for the linear combination as this give us more flexible control over the result of the linear combination with the helper data. 
+Therefore, we will use three or more summands for the linear combination as this give us more flexible control over the result of the linear combination with the helper data. 
 Later we will be able to show that a higher number of summands for $z$ can provide better approximations for the ideal values of $z$ at the expense of the number of available input values for the quantizer. 
 
 We will define $z$ from now on as:
 $
-z = x_1 dot h_1 plus x_2 dot h_2 plus x_3 dot h_3.
+z = sum_(i=3)^n x_i dot h_i
 $<eq:z_eq>
 
 We can now find the optimal linear combination $z_"opt"$ by finding the minimum of all distances to all optimal points defined as $bold(cal(o))$.
@@ -161,4 +161,23 @@ We can now use an iterative algorithm that alternates between optimizing the qua
     kind: "algorithm",
     supplement: [Algorithm],
     include("../pseudocode/bach_1.typ")
-)
+)<alg:bach_1>
+
+We can see both of these alternating parts in @alg:bach_1_2[Lines] and @alg:bach_1_3[] of @alg:bach_1. 
+To optimize the quantizing bounds of $cal(Q)$, we will sort the values of all the resulting linear combinations $bold(z)_"opt"$ in ascending order. 
+Using the inverse @ecdf defined in @eq:ecdf_inverse, we can find new quantizer bounds based on $bold(z)_"opt"$ from the first iteration.
+These bounds will then be used to define a new set of optimal points $bold(cal(o))$ used for the next iteration. 
+During every iteration of @alg:bach_1, we will store all weights $bold(h)$ used to generate the vector for optimal linear combinations $bold(z)_"opt"$. 
+
+The output of @alg:bach_1 is the vector of optimal weights $bold(h)_"opt"$.
+$bold(h)_"opt"$ can now be used to complete the enrollment phase and quantize the values $bold(z)_"opt"$.
+
+=== Maximum quantizing bound distance approximation
+
+Instead of defining the optimal positions for $z$ with fixed values, we can also provide a more loose definition of $bold(cal(o))$.
+Let's consider the following example: 
+
+
+== Experiments 
+
+== Results & Discussion

@@ -13,16 +13,18 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +128 content/BACH.typ
+badd +183 content/BACH.typ
 badd +1 glossary.typ
 badd +1 bibliography.bib
-badd +0 \$
-badd +6 pseudocode/bach_1.typ
+badd +1 \$
+badd +14 pseudocode/bach_1.typ
 badd +265 content/SMHD.typ
 badd +7 pseudocode/bach_find_best_appr.typ
+badd +60 content/introduction.typ
 argglobal
 %argdel
 set stal=2
+tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
@@ -40,11 +42,31 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 164 - ((38 * winheight(0) + 25) / 50)
+let s:l = 88 - ((17 * winheight(0) + 25) / 50)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 164
+keepjumps 88
+normal! 0102|
+tabnext
+edit content/introduction.typ
+argglobal
+balt content/BACH.typ
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let &fdl = &fdl
+let s:l = 56 - ((41 * winheight(0) + 25) / 50)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 56
 normal! 0
 tabnext
 edit glossary.typ
@@ -105,9 +127,7 @@ set winheight=1
 set winminwidth=0
 set winwidth=1
 exe '1resize ' . ((&lines * 25 + 26) / 53)
-exe 'vert 1resize ' . ((&columns * 129 + 105) / 211)
 exe '2resize ' . ((&lines * 24 + 26) / 53)
-exe 'vert 2resize ' . ((&columns * 129 + 105) / 211)
 argglobal
 balt bibliography.bib
 setlocal fdm=manual
@@ -120,12 +140,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 16 - ((15 * winheight(0) + 12) / 25)
+let s:l = 12 - ((11 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 16
-normal! 0
+keepjumps 12
+normal! 068|
 wincmd w
 argglobal
 if bufexists(fnamemodify("pseudocode/bach_find_best_appr.typ", ":p")) | buffer pseudocode/bach_find_best_appr.typ | else | edit pseudocode/bach_find_best_appr.typ | endif
@@ -151,10 +171,8 @@ keepjumps 7
 normal! 031|
 wincmd w
 exe '1resize ' . ((&lines * 25 + 26) / 53)
-exe 'vert 1resize ' . ((&columns * 129 + 105) / 211)
 exe '2resize ' . ((&lines * 24 + 26) / 53)
-exe 'vert 2resize ' . ((&columns * 129 + 105) / 211)
-tabnext 1
+tabnext 5
 set stal=1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf

@@ -172,6 +172,8 @@ During every iteration of @alg:bach_1, we will store all weights $bold(h)$ used 
 The output of @alg:bach_1 is the vector of optimal weights $bold(h)_"opt"$.
 $bold(h)_"opt"$ can now be used to complete the enrollment phase and quantize the values $bold(z)_"opt"$.
 
+To perform reconstruction, we can construct the same linear combination used during enrollment with the found helper-data and the new PUF readout measurements.
+
 === Maximum quantizing bound distance approximation
 
 Instead of defining the optimal positions for $z$ with fixed values, we can also provide a more loose definition of $bold(cal(o))$.

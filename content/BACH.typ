@@ -92,7 +92,7 @@ In fact, we will show later, that the amount of helper-data bits used by this HD
 
 We can generalize the idea of @sect:1-bit-opt and apply it for a higher-order bit quantization.
 Contrary to @smhdt, we will always use the same step function as quantizer and optimize the input values $x$ to be the furthest away from any decision threshold.
-In this higher-order case, this means that we want to optimise out input values as close as possible to the middle of a quantizer step or as far away as possible from a decision threshold of the quantizer instead of just maximising the absolute value of the linear combination.
+In this higher-order case, this means that we want to optimise out input values as close as possible to the middle of a quantizer step or as far away as possible from the nearest decision threshold of the quantizer instead of just maximising the absolute value of the linear combination.
 
 Two different strategies to find the linear combination arise from this premise: 
 1. *Center point approximation*: Finding the linear combination that best approximates the center of a quantizer step, since these points are the furthest away from any decision threshold.
@@ -103,7 +103,7 @@ Thus we will define a vector $bold(cal(o)) in.rev {cal(o)_1, cal(o)_2 ..., cal(o
 Its cardinality is $2^M$, while $M$ defines the number of bits we want to extract through the quantization.
 It has to be noted, that $bold(cal(o))$ consists of optimal values that we may not be able to exactly approximate using a linear combination based on weights and our given input values. 
 
-In comparison to the 1-bit sign-based quantization, we will not be able to find a linear combination of only two input values that approximates the optimal points we defined earlier.
+In comparison to the 1-bit sign-based quantization, a linear combination with only two addends does not achieve sufficiently accurate results. 
 Therefore, we will use three or more summands for the linear combination as this give us more flexible control over the result of the linear combination with the helper data. 
 Later we will be able to show that a higher number of summands for $z$ can provide better approximations for the ideal values of $z$ at the expense of the number of available input values for the quantizer. 
 
@@ -176,8 +176,8 @@ To perform reconstruction, we can construct the same linear combination used dur
 
 === Maximum quantizing bound distance approximation
 
-Instead of defining the optimal positions for $z$ with fixed values, we can also provide a more loose definition of $bold(cal(o))$.
-Let's consider the following example: 
+Instead of defining the optimal positions for $z$ $bold(cal(o))$ with fixed values, we can find the linear combination with the greatest distance to the nearest boundary.
+This way, we will do things
 
 
 == Experiments 

@@ -358,7 +358,7 @@ Furthermore, the transformation into the Tilde-Domain could also be performed us
 
 //#inline-note[Hier vielleicht noch eine Grafik zur Visualisierung?]
 
-== Experiments
+== Experiments<sect:smhd_experiments>
 
 We tested the implementation of @sect:smhd_implementation with the temperature dataset of @dataset.
 The dataset contains counts of positives edges of a toggle flip flop at a set evaluation time $D$. Based on the count and the evaluation time, the frequency of a ring oscillator can be calculated using: $f = 2 dot frac(k, D)$. 
@@ -394,11 +394,28 @@ This tendency can also be shown through @fig:errorrates_changerate.
 Here, we calculated the quotient of the bit error rate using one metric and 100 metrics.
 From $m >= 6$ onwards, $(x_"1" (m)) / (x_"100" (m))$ approaches $~1$, which means, no real improvement is possible anymore through the S-Metric method.
 
-=== Helper Data Volume Trade-off
+==== Helper Data Volume Impact
+
+The amount of helper data bits required by @smhdt is defined as a function of the amount of metrics as $log_2(S)$.
+The overall extracted-bits to helper-data-bits ratio can be defined here as $cal(r) = lr(frac(n dot M, log_2(S))mid(|))_(n=800) = frac(800 dot M, log_2(S))$
+
+#figure(
+    table(
+      columns: (7),
+      inset: 7pt,
+      align: center + horizon,
+      [$bold(M)$], [$1$], [$2$], [$3$], [$4$], [$5$], [$6$],
+      [*Errorrate*], [$0.012$], [$0.9 dot 10^(-4)$], [$0.002$], [$0.025$], [$0.857$], [$0.148$], 
+    ),
+    caption: [S-Metric performance with same bit-to-metric ratios]
+)<fig:smhd_ratio_performance>
+
+If we take a look at the error rates of configurations for which $cal(r)$ is $800 dot 1$, we can observe a decline in performance of @smhdt for general higher-bit quantization processes. 
+This behaviour is also shown in @fig:smhd_ratio_performance.
 
 
 
-=== Impact of temperature<sect:impact_of_temperature>
+==== Impact of temperature<sect:impact_of_temperature>
 
 We will now take a look at the impact on the error rates of changing the temperature both during the enrollment and the reconstruction phase.
 
@@ -424,7 +441,7 @@ We can observe this property well in detail in @fig:global_diffs.
 Here, we compared the asymptotic performance of @smhdt for different temperatures both during enrollment and reconstruction. First we can observe that the optimum temperature for the operation of @smhdt in both phases for the dataset @dataset is $35°C$ instead of the expected $25°C$.
 Furthermore, the @ber seems to be almost directly correlated with the absolute temperature difference, especially at higher temperature differences, showing that the further apart the temperatures of the two phases are, the higher the @ber.
 
-=== Gray coding
+==== Gray coding
 
 In @sect:smhd_improvements, we discussed how a gray coded labelling for the quantizer could improve the bit error rates of the S-Metric method.
 
@@ -454,9 +471,3 @@ For $M>3$ the rise of the #gls("ber") predominates the possible improvement by a
 )<fig:smhd_gray_coding>
 
 Using our dataset, we can estimate the average improvement for using gray-coded labelling to be at around $33%$.
-
-=== Usage of an @ecdf
-
-- eCDF kann die Gleichverteilung der quantisierten Symbole verbessern, da keine standardabweichung geschätzt werden muss, dafür komplexer zum ausrechnen
-- Vergleich mit zwei histogrammen für die Gleichverteilung der Symbole? 
-- BER auswerten, ist wahrscheinlich schlechter

@@ -1,11 +1,32 @@
 #import "@preview/glossarium:0.4.1": * 
+#import "@preview/bob-draw:0.1.0": *
 = Introduction
 
-#gls("puf", display: "Physical unclonable functions (PUF)")  
+In the field of cryptography, @puf devices are a popular tool for key generation and storage.
+In general, a @puf describes a kind of circuit that issues due to minimal deviations in the manufacturing process slightly different behaviours during operation. 
+Since the behaviour of one @puf device is now only reproducible on itself and not on a device of the same type with the same manufacturing process, it can be used for secure key generation and/or storage.\
+
+To improve the reliability of the keys generated and stored using the @puf, various #glspl("hda") have been introduced. 
+The general operation of a @puf with a @hda can be divided into two separate stages: _enrollment_ and _reconstruction_.
+During enrollment, a @puf readout $v$ is generated upon which helper data $h$ is generated. 
+At reconstruction, a slightly different @puf readout $v^*$ is generated. 
+Using the helper data $h$ the new @puf readout $v^*$ can be improved to be less deviated from $v$ as before.
+This process of helper-data generation is generally known as _Fuzzy Commitment_.
+
+Previous works already introduced different #glspl("hda") with various strategies.
+The simplest form of helper-data one could generate is reliability information for every @puf bit.
+Here, the @hda marks unreliable @puf bits that are then either discarded during reconstruction or rather corrected using a repetition code after the quantization process. 
+
+Going on, publications @tmhd1, @tmhd2 and @smhd already introduced a metric-based @hda. 
+These #glspl("hda") generate helper data during enrollment to define multiple quantizers for the reconstruction phase to minimize the risk of bit errors. 
+
+
+As a newly proposed @hda, we will propose a method to shape the input values of a @puf to better fit inside the bounds of a multi-bit quantizer. 
+We will explore the question which of these two #glspl("hda") provides the better performance for higher order bit cases using the least amount of helper-data bits possible.
 
 == Notation
 
-To ensure a consistent notation of functions and ideas, we will now introduce some conventions 
+To ensure a consistent notation of functions and ideas, we will now introduce some conventions and definitions.
 
 Random distributed variables will be notated with a capital letter, i.e. $X$, its realization will be the corresponding lower case letter, $x$.
 Vectors will be written in bold text: $bold(k)$ represents a vector of quantized symbols.
@@ -30,7 +51,7 @@ The corresponding metric is defined through the lower case $s$, the bit symbol t
 
 === Tilde-Domain<tilde-domain>
 
-AS also described in @smhd, we will use a CDF to transform the real PUF values into the Tilde-Domain
+As also described in @smhd, we will use a CDF to transform the real PUF values into the Tilde-Domain
 This transformation can be performed using the function $xi = tilde(x)$. The key property of this transformation is the resulting uniform distribution of $x$. 
 
 Considering a normal distribution, the CDF is defined as 

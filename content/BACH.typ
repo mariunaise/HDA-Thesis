@@ -80,7 +80,7 @@ $
 bold(z) &= bold(x) dot bold(H)\
 &= vec(x_1, x_2) dot mat(delim: "[", h_1, -h_1, h_1, -h_1; h_2, h_2, -h_2, -h_2)\
 &= vec(x_1, x_2) dot mat(delim: "[", +1, -1, +1, -1; +1, +1, -1, -1)
-$
+$<eq:z_combinations>
 We will choose the optimal weights based on the highest absolute value of $bold(z)$, as that value will be the furthest away from $0$. 
 We may encounter two entries in $bold(z)$ that both have the same highest absolute value.
 In that case, we will choose the combination of weights randomly out of our possible options. 
@@ -92,32 +92,105 @@ In fact, we will show later, that the amount of helper-data bits used by this HD
 
 We can generalize the idea of @sect:1-bit-opt and apply it for a higher-order bit quantization.
 Contrary to @smhdt, we will always use the same step function as quantizer and optimize the input values $x$ to be the furthest away from any decision threshold.
-In this higher-order case, this means that we want to optimise out input values as close as possible to the middle of a quantizer step or as far away as possible from the nearest decision threshold of the quantizer instead of just maximising the absolute value of the linear combination.
+In this higher-order case, this means that we want to optimise our input values as far away as possible from the nearest decision threshold of the quantizer instead of just maximising the absolute value of the linear combination.
 
-Two different strategies to find the linear combination arise from this premise: 
-1. *Center point approximation*: Finding the linear combination that best approximates the center of a quantizer step, since these points are the furthest away from any decision threshold.
-2. *Maximum quantizing bound distance approximation*:Approximating the point that is the furthest away directly through finding the linear combination with the maximum minimum distance to a decision threshold.
+For a complete generalization of this method, we will also parametrize the amount of addends in the linear combination of $z$.
+//Later we will be able to show that a higher number of summands for $z$ can provide better approximations for the ideal values of $z$ at the expense of the number of available input values for the quantizer. 
 
-Although different in there respective implementations, both of these strategies aim to find a combination of helper-data that will best approximate one point out of a set of optimal points for $z$.
-Thus we will define a vector $bold(cal(o)) in.rev {cal(o)_1, cal(o)_2 ..., cal(o)_(2^M)}$ containing the optimal values that we want to approximate with $z$.
+That means we can define $z$ from now on as:
+$
+z = sum_(i=1)^(n>=2) x_i dot h_i
+$<eq:z_eq>
+
+
+
+We can define the condition to test whereas a tested linear combination is optimal as follows:\
+The optimal linear combination $z_"opt"$ is found, when the distance to the nearest quantizer decision bound is maximised. 
+
+==== Example with 2-bit quantizer
+//Let's consider the following example using a 2-bit quantizer:\
+We can define the bounds of the two bit quantizer $bold(b)$ as $[-alpha, 0, alpha]$ omitting the bounds $plus.minus infinity$.
+The values of $bold(b)$ are already placed in the real domain to directly quantize normal distributed input values.
+
+The linear combination $z$ for the amount of addends $i = 2$ is defined as 
+$
+z = x_1 dot h_1 plus x_2 dot h_2
+$<eq:bach_z_example>
+
+According to @eq:z_combinations, all possible linear combinations for two input values $x_1 "and" x_2$ of @eq:bach_z_example can be collected as the vector $bold(z)$ of length $2^i |_(i=2) =4$:
+$
+bold(z) = vec(z_1\, z_2\, z_3\, z_4)
+$
+Calculating the absolute distances to every quantizer bound $b_i$ for all linear combinations $z_i$ gives us the following distance matrix:
+
+$
+bold(cal(A)) = mat(
+  a_(1,1), a_(2,1), a_(3,1), a_(4,1);
+  a_(1,2), a_(2,2), a_(3,1), a_(4,2);
+  a_(1,3), a_(2,3), a_(3,1), a_(4,3);
+),
+$<mat:distance_A>
+
+where $a_"i,j" = abs(z_i - b_j)$.
+
+Now we want to find the bound $b_i$ for every $z_i$ to which it is closest.
+This can be achieved by determining the minimum value for each column of the matrix $bold(cal(A))$.
+The resulting vector $bold(nu)$ now consists of the distance to the nearest quantizer bound for every linear combination with entries defined as: 
+$
+nu_"j" = min{a_"i,j" | 1 <= j  <= 4} "for each" i  = 1, 2, 3.
+$
+
+The optimal linear combination $z_"opt"$ can now be found as the entry $z_j$ of $bold(z)$ where its corresponding distance $nu_j$ is maximised.
+
+Two important points were anticipated in this example: 
+1. We cannot define the resulting random distribution $Z$ after performing this operation analytically and thus also not the quantizer bounds $bold(b)$.
+  A way to account for that is to guess the resulting random distribution and $bold(b)$ initially and repeating the optimization using quantizer bounds found through the @ecdf of the resulting linear combination values.
+2. If the optimization described above is repeated multiple times using an @ecdf, the resulting random distribution $Z$ must converge to a stable random distribution. Otherwise we will not be able to carry out a reliable quantization in which the symbols are uniformly distributed.
+
+=== Simulation of the bound distance maximisation strategy<sect:instability_sim> 
+
+To check that the strategy for optimizing the linear combination provided in the example above results in a converging random distribution, we will perform a simulation of the optimization as described in the example using $100,000$ simulated normal distributed values as realizations of the standard normal distribution with the parameters $mu = 0$ and $sigma = 1$.
+
+#figure(
+grid(
+  columns: (1fr, 1fr),
+  rows: (2),
+  row-gutter: 5pt,
+  figure(
+    image("../graphics/plots/bach/instability/frame_1.png"),
+  ),
+  figure(
+    image("../graphics/plots/bach/instability/frame_7.png"),
+  ),
+  figure(
+    image("../graphics/plots/bach/instability/frame_18.png"),
+  ),
+  figure(
+    image("../graphics/plots/bach/instability/frame_25.png"),
+  )
+),
+  caption: [Probability distributions for various iterations]
+)<fig:bach_instability>
+
+@fig:bach_instability shows various histograms of the vector $bold(z)_"opt"$ after different iterations.
+Even though the overall shape of the distribution comes close to our goal of moving the input values away from the quantizer bounds $bold(b)$, the distribution itself does not converge to one specific, final shape. 
+It seems that the resulting distributions for each iteration oscillate in some way, since the distributions for iterations $7$ and $25$ have the same shape.
+However the distribution does not seem to be predictable on the basis of the index of the iteration.
+
+=== Center Point Approximation 
+
+For that reason, we will now propose a different strategy to find the weights for the optimal linear combination $z_"opt"$.
+Instead of defining the desired outcome of $z_"opt"$ as the greatest distance to the nearest quantizer decision threshold, we will define a vector $bold(cal(o)) in.rev {cal(o)_1, cal(o)_2 ..., cal(o)_(2^M)}$ containing the optimal values that we want to approximate with $z$.
+Considering a m-bit quantizer with $2^m$ steps, we can define the values of $bold(cal(o))$ as the center points of these quantizer steps.
 Its cardinality is $2^M$, while $M$ defines the number of bits we want to extract through the quantization.
 It has to be noted, that $bold(cal(o))$ consists of optimal values that we may not be able to exactly approximate using a linear combination based on weights and our given input values. 
 
-In comparison to the 1-bit sign-based quantization, a linear combination with only two addends does not achieve sufficiently accurate results. 
-Therefore, we will use three or more summands for the linear combination as this give us more flexible control over the result of the linear combination with the helper data. 
-Later we will be able to show that a higher number of summands for $z$ can provide better approximations for the ideal values of $z$ at the expense of the number of available input values for the quantizer. 
-
-We will define $z$ from now on as:
-$
-z = sum_(i=3)^n x_i dot h_i
-$<eq:z_eq>
-
-We can now find the optimal linear combination $z_"opt"$ by finding the minimum of all distances to all optimal points defined as $bold(cal(o))$.
+We can find the optimal linear combination $z_"opt"$ by finding the minimum of all distances to all optimal points defined in $bold(cal(o))$.
 The matrix that contains the distances of all linear combinations $bold(z)$ to all optimal points $bold(cal(o))$ is defined as: $bold(cal(A))$ with its entries $a_"ij" = abs(z_"i" - o_"j")$.\
 $z_"opt"$ can now be defined as the minimal value in $bold(cal(A))$:
 $
-z_"opt" = op("argmin")(bold(cal(A)))
-= op("argmin")(mat(delim: "[", a_("00"), ..., a_("i0"); dots.v, dots.down, " "; a_"0j", " ", a_"ij" )).
+z_"opt" = op("min")(bold(cal(A)))
+= op("min")(mat(delim: "[", a_("00"), ..., a_("i0"); dots.v, dots.down, " "; a_"0j", " ", a_"ij" )).
 $
 #figure(
   kind: "algorithm",
@@ -126,9 +199,7 @@ $
 )<alg:best_appr>
 
 @alg:best_appr shows a programmatic approach to find the set of weights for the best approximation. The algorithm returns a tuple consisting of the weight combination $bold(h)$ and the resulting value of the linear combination $z_"opt"$
-=== Realization of center point approximation
 
-As described earlier, we can define the ideal possible positions for the linear combination $z_"opt"$ to be the centers of the quantizer steps.
 Because the superposition of different linear combinations of normal distributions corresponds to a Gaussian Mixture Model, wherein finding the ideal set of points $bold(cal(o))$ analytically is impossible.
 
 Instead, we will first estimate $bold(cal(o))$ based on the normal distribution parameters after performing multiple convolutions with the input distribution $X$.
@@ -142,7 +213,7 @@ With this definition, we can define the parameters of the probability distributi
 
 $
 Z(mu_Z, sigma_Z^2) = Z(sum_(i=1^n) mu_X, sum_(i=1)^n sigma_X^2)
-$
+$<eq:z_dist_def>
 
 The parameters $mu_Z$ and $sigma_Z$ allow us to apply an inverse CDF on a multi-bit quantizer $cal(Q)(2, tilde(x))$ defined in the tilde-domain. 
 Our initial values for $bold(cal(o))_"first"$ can now be defined as the centers of the steps of the transformed quantizer function $cal(Q)(2, x)$.
@@ -169,17 +240,61 @@ Using the inverse @ecdf defined in @eq:ecdf_inverse, we can find new quantizer b
 These bounds will then be used to define a new set of optimal points $bold(cal(o))$ used for the next iteration. 
 During every iteration of @alg:bach_1, we will store all weights $bold(h)$ used to generate the vector for optimal linear combinations $bold(z)_"opt"$. 
 
+We can also use a simulation here to check the convergence of the distribution $Z$ using the same input values and quantizer configurations as in @sect:instability_sim.
+
+#figure(
+  grid(
+    columns: (2),
+    figure(
+      image("./../graphics/plots/bach/stability/frame_1.png")
+    ),
+    figure(
+      image("./../graphics/plots/bach/stability/frame_25.png")
+    ),
+  ),
+  caption: [Probability distributions for the first and 25th iteration of the center point approximation method]
+)<fig:bach_stability>
+
+Comparing the distributions in fig:bach_stability, we can see that besides a closer arrangement the overall shape of the probability distribution $Z$ converges to a Gaussian Mixture representing the original estimated distribution $Z$ through @eq:z_dist_def through smaller normal distributions. 
+
 The output of @alg:bach_1 is the vector of optimal weights $bold(h)_"opt"$.
 $bold(h)_"opt"$ can now be used to complete the enrollment phase and quantize the values $bold(z)_"opt"$.
 
 To perform reconstruction, we can construct the same linear combination used during enrollment with the found helper-data and the new PUF readout measurements.
 
-=== Maximum quantizing bound distance approximation
-
-Instead of defining the optimal positions for $z$ $bold(cal(o))$ with fixed values, we can find the linear combination with the greatest distance to the nearest boundary.
-This way, we will do things
-
-
 == Experiments 
+To test our implementation of BACH using the prior introduced center point approximation we conducted a similar experiment as in @sect:smhd_experiments.
+However, we have omitted the analysis over different temperatures for the enrollment and reconstruction phase here, as the behaviour of BACH corresponds to that of @smhdt in this matter.
+As in the S-Metric analysis, the resulting dataset consists of the bit error rates of various configurations with quantization symbol widths of up to $4$ bits evaluated with up to $10$ addends for the linear combinations.  
 
-== Results & Discussion
+== Results & Discussion 
+
+We can now compare the #glspl("ber") of different BACH configurations.
+
+#figure(
+  table(
+    columns: (9),
+    align: center + horizon, 
+    inset: 7pt,
+    [*BER*],[N=2],[N=3],[N=4],[N=5], [N=6], [$N=7$], [$N=8$], [$N=9$],
+    [$M=1$], [$0.09$], [$0.09$], [$0.012$], [$0.018$], [$0.044$], [$0.05$], [$0.06$], [$0.07$],
+    [$M=2$], [$0.03$], [$0.05$], [$0.02$], [$0.078$], [$0.107$], [$0.114$], [$0.143$], [$0.138$],
+    [$M=3$], [$0.07$], [$0.114$], [$0.05$], [$0.15$], [$0.2$], [$0.26$], [$0.26$], [$0.31$],
+    [$M=4$], [$0.13$], [$0.09$], [$0.18$], [$0.22$], [$0.26$], [$0.31$], [$0.32$],[$0.35$]
+  ),
+  caption: [#glspl("ber") of different BACH configurations]
+)<tab:BACH_performance>
+
+
+@tab:BACH_performance shows the #glspl("ber") of BACH configurations with $N$ addends and extracting $M$ bits out of one input value $z$.
+The first interesting property we can observe, is the caveat BACH produces for the first three bit combinations $M = 1, 2 "and" 3$ at around $N = 3$ and $N = 4$. 
+At these points the @ber experiences a drop followed by a steady rise again for higher numbers of $N$. 
+This observation could be explained through the fact that the higher $N$ is chosen, the shorter the resulting key, since $N$ divides out values available for quantization by $N$. 
+
+=== Impact of helper-data volume and amount of addends
+
+Contrary to @smhdt, the amount of helper data is directly linked to the amount of available input data provided by the @puf readout. 
+In our experiments, this means we will always generate $800$ helper data bits, since our input data consists of $800$ ring-oscillator frequency differences. 
+
+If we now take into account, that we divide our input set by $N$ addends to receive values available for quantization and are then able to yield $M$ bits per available value due to our higher-bit quantization, we can define the extracted-bit to helper-data bits ratio as
+$cal(r) = lr(frac(frac(n dot M, N), 800)mid(|))_(n=800) = frac(M, N)$, whose equation is similar to the one we used in the @smhdt analysis.

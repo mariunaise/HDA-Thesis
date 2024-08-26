@@ -25,15 +25,15 @@
   )
 
   plot.plot(
-    y-label: $"Bit error rate"$,
-    x-label: "Operating configuration",
+    y-label: "Bit error rate",
+    x-label: "Enrollment, reconstruction temperature",
     x-tick-step: none,
     x-ticks: conf,
     y-format: formatter,
     y-tick-step: 0.5,
     axis-style: "scientific-auto",
     size: (16,6),
-    plot.add(errorrate, axes: ("x", "y"), style: (stroke: (paint: red))),
+    plot.add(errorrate, axes: ("x", "y"), style: (stroke: (paint: red)), label: $op("BER")(100, 2^2)$),
     plot.add-hline(1)
   )
 

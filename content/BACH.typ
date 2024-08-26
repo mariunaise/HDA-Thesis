@@ -4,9 +4,11 @@
 
 Instead of generating helper-data to improve the quantization process itself, like in #gls("smhdt"), or using some kind of error correcting code after the quantization process, we can also try to find helper-data before performing the quantization that will optimize our input values before quantizing them to minimize the risk of bit and symbol errors during the reconstruction phase. 
 
+
+
 Since this #gls("hda") modifies the input values before the quantization takes place, we will consider the input values as zero-mean Gaussian distributed and not use a CDF to transform these values into the tilde-domain.
 
-== Optimizing a 1-bit sign-based quantization<sect:1-bit-opt>
+== Optimizing single-bit sign-based quantization<sect:1-bit-opt>
 
 Before we take a look at the higher order quantization cases, we will start with a very basic method of quantization: a quantizer, that only returns a symbol with a width of $1$ bit and uses the sign of the input value to determine the resulting bit symbol.
 
@@ -17,7 +19,7 @@ Before we take a look at the higher order quantization cases, we will start with
 
 If we overlay the PDF of a zero-mean Gaussian distributed variable $X$ with a sign-based quantizer function as shown in @fig:1-bit_normal, we can see that the expected value of the Gaussian distribution overlaps with the decision threshold of the sign-based quantizer.
 Considering that the margin of error of the value $x$ is comparable with the one shown in @fig:tmhd_example_enroll, we can conclude that values of $X$ that reside near $0$ are to be considered more unreliable than values that are further away from the x-value 0.
-This means that the quantizer used here is very unreliable without generated helper-data.
+This means that the quantizer used here is very unreliable as is.
 
 Now, to increase the reliability of this quantizer, we can try to move our input values further away from the value $x = 0$. 
 To do so, we can define a new input value $z$ as a linear combination of two realizations of $X$, $x_1$ and $x_2$ with a set of weights $h_1$ and $h_2$: 

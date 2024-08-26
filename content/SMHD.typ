@@ -21,14 +21,16 @@ Contrary to @tmhd1, @tmhd2 and @smhd, which display relevant areas as equi-proba
 It has to be mentioned, that instead of transforming all values of the PUF readout into the Tilde-Domain, we could also use an inverse CDF to transform the bounds of our evenly spaced areas into the real domain with (normal) distributed values, which can be assessed as remarkably less computationally complex.#margin-note[Das erst später]
 */
 === Two-Metric Helper Data Method <sect:tmhd>
-The most simple form of a metric-based @hda is the Two-Metric Helper Data Method, since the quantization only yields symbols of 1-bit width and uses the least amount of metrics possible if we want to use more than one metric. 
+The simplest form of a metric-based @hda is the Two-Metric Helper Data Method.
+Its quantization only yields symbols of 1-bit width and it only uses a single bit of helper data to store the choice of metric. 
 
 @fig:tmhd_example_enroll and @fig:tmhd_example_reconstruct illustrate an example enrollment and reconstruction process. 
-We would consider the marked point the value of the initial measurement and the marked range our margin of error.
+Consider the marked point the value of the initial measurement and the marked range our margin of error.
 If we now were to use the original quantizer shown in @fig:tmhd_example_enroll during both the enrollment and the reconstruction phases, we would risk a bit error, because the margin of error overlaps with the lower quantization bound $-a$, which we can call a point of uncertainty.
-But since we generated helper data during enrollment as depicted in @fig:tmhd_enroll, we can make use of a different quantizer $cal(R)(1, 2, x)$ whose boundaries do not overlap with the error margin. 
+To alleviate this we generated helper data during enrollment as depicted in @fig:tmhd_enroll, we can make use of a different quantizer $cal(R)(1, 2, x)$ whose boundaries do not overlap with the error margin. 
 #scale(x: 90%, y: 90%)[
-#grid(
+#figure(
+  grid(
   columns: (1fr, 1fr),
   [#figure(
   include("../graphics/quantizers/two-metric/example_enroll.typ"),
@@ -36,15 +38,16 @@ But since we generated helper data during enrollment as depicted in @fig:tmhd_en
   [#figure(
     include("../graphics/quantizers/two-metric/example_reconstruct.typ"),
     caption: [Example reconstruction]) <fig:tmhd_example_reconstruct>]
-)]
+), 
+  caption: [Example enrollment and reconstruction of @tmhdt. The window function describes the quantizer used to define the resulting bit. The red dot shows a possible @puf readout measurement with its blue marked strip as margin of error.])]
 
 Publications @tmhd1 and @tmhd2 find all the relevant bounds for the enrollment and reconstruction phases under the assumption that the PUF readout (our input value $x$) is zero-mean Gaussian distributed. 
 //Because the parameters for symbol width and number of metrics always stays the same, it is easier to calculate #m//argin-note[obdA annehmen hier] the bounds for 8 equi-probable areas with a standard deviation of $sigma = 1$ first and then multiplying them with the estimated standard deviation of the PUF readout.
-Because the parameters for symbol width and number of metrics always stays the same, we can -- without loss of generality -- assume the standard deviation as $sigma = 1$ and calculate the bounds for 8 equi-probable areas for this distribution. 
+Because the parameters for symbol width and number of metrics always stay the same, we can -- without loss of generality -- assume the standard deviation as $sigma = 1$ and calculate the bounds for 8 equi-probable areas for this distribution. 
 This is done by finding two bounds $a$ and $b$ such, that 
 $ integral_a^b f_X(x) \dx = 1/8 $
 This operation yields 9 bounds defining these areas $-infinity$, $-\T1$, $-a$, $-\T2$, $0$, $\T2$, $a$, $\T1$ and $+infinity$.
-During the enrollment phase, we will use $plus.minus a$ as our quantizing bounds, returning $0$ if the //#margin-note[Rück-\ sprache?] absolute value is smaller than $a$ and $1$ otherwise.
+During the enrollment phase, we will use $plus.minus a$ as our quantizing bounds, returning $0$ if the absolute value of $x$ is smaller than $a$ and $1$ otherwise.
 The corresponding metric is chosen based on the following conditions: 
 
 $ M = cases(
@@ -53,7 +56,6 @@ $ M = cases(
 )space.en. $
 
 @fig:tmhd_enroll shows the curve of a quantizer $cal(Q)$ that would be used during the Two-Metric enrollment phase.
-At this point we will still assume that our input value $x$ is zero-mean Gaussian distributed. //#margin-note[Als Annahme nach vorne verschieben]
 #scale(x: 90%, y: 90%)[
 #grid(
   columns: (1fr, 1fr),
@@ -67,7 +69,7 @@ At this point we will still assume that our input value $x$ is zero-mean Gaussia
 ]
 
 As previously described, each of these metrics correspond to a different quantizer. 
-Now, we can use the generated helper data in the reconstruction phase and define a reconstructed bit based on the chosen metric as follows: 
+In the reconstruction phase, we can use the generated helper data and define a reconstructed bit based on the chosen metric as follows:
 
 $ #grid(
   columns: (1fr, 1fr),
@@ -77,7 +79,7 @@ $ #grid(
 ) $
 
 @fig:tmhd_reconstruct illustrates the basic idea behind the Two-Metric method. Using the helper data, we will move the bounds of the original quantizer (@fig:tmhd_example_enroll) one octile to each side, yielding two new quantizers. 
-The advantage of this method comes from moving the point of uncertainty away from our readout position. 
+The advantage of this method comes from moving the point of uncertainty away from our enrollment-time readout. 
 
 
 
@@ -113,7 +115,8 @@ The generalization consists of two components:
 == Realization<sect:smhd_implementation> 
 
 We will now propose a specific realization of the S-Metric Helper Data Method. \
-//As shown in @sect:dist_independency, we can use a CDF to transform our random distributed variable $X$ into an $tilde(X)$ in the tilde domain.
+Instead of using the @puf readout directly for @smhdt, we can use a @cdf to transform these values into the tilde domain. 
+The only requirement we would need to meet here is that the @cdf of the probability distribution used is known.
 This allows us to use equi-distant bounds for the quantizer instead of equi-probable ones. 
 
 From now on we will use the following syntax for quantizers that use the S-Metric Helper Data Method: 
@@ -142,7 +145,7 @@ Right now, this quantizer wouldn't help us generating any helper data.
 To achieve that, we will need to divide a symbol step -- one, that returns the corresponding quantized symbol - into multiple sub-steps.
 Using $S$, we can define the step size $Delta_S$ as the division of $Delta$ by $S$:
 
-$ Delta_S = frac(Delta, S) = frac(frac(1, 2^M), S) = frac(1, 2^M dot S) $<eq:delta_s>
+$ Delta_S = frac(Delta, S) = frac(1, 2^M dot S) $<eq:delta_s>
 
 /*After this definition #margin-note[Absatz nochmal neu], we need to make an adjustment to our previously defined quantizer function, because we cannot simply return the quantized value based on a quantizer with step size $Delta_s$. 
 That would just increase the amounts of bits we will extract out of one measurement. 
@@ -178,22 +181,23 @@ In that sense, increasing the number of metrics will increase the number of sub-
 We can now perform the enrollment of a full PUF readout. 
 Each measurement will be quantized with out quantizer $cal(E)$, returning a tuple consisting of the quantized symbol and helper data.
 
-$ K_i = cal(E)(s, m, tilde(x_i)) = (k, h)_i space.en. $ <eq:smhd_quant>
+$ kappa_i = cal(E)(s, m, tilde(x_i)) = (k, h)_i space.en. $ <eq:smhd_quant>
 
-Performing the operation of @eq:smhd_quant for our whole set of measurements will yield a vector of tuples $bold(K)$.
+Performing the operation of @eq:smhd_quant for our whole set of measurements will yield a vector of tuples $bold(kappa)$.
 
 === Reconstruction
 
 We already demonstrated the basic principle of the reconstruction phase in section @sect:tmhd, which showed the advantage of using more than one quantizer during reconstruction. 
 
 We will call our repeated measurement of $tilde(x)$ that is subject to a certain error $tilde(x^*)$.
-To perform reconstruction with $tilde(x^*)$, we will first need to find all $S$ quantizers for which we generated the helper data in the previous step. 
+To perform reconstruction with $tilde(x^*)$, we will first need to find all $S$ quantizers for which we generated the helper data in the previous step and then choose the one corresponding to the saved metric.
 
 We have to distinguish the two cases, that $S$ is either even or odd:\
-If $S$ is even, we need to define $S$ quantizers offset by some distance $phi$.
-We can define the ideal position for the quantizer bounds based on its corresponding metric as centered around the center of the related metric.
+If $S$ is even, we need to define $S$ quantizers offset by multiples of $phi$.
+We can define the ideal position for the quantizer bounds based on its corresponding metric as centered around the center of the metric.
 
 We can find these new bounds graphically as depicted in @fig:smhd_find_bound_graph. We first determine the x-values of the centers of a metric (here M1, as shown with the arrows). We can then place the quantizer steps with step size $Delta$ (@eq:delta) evenly spaced around these points.
+If the resulting quantizer bound is smaller than $0$ or bigger than $1$, we will either add or subtract $1$ from its value so it stays in the defined range of the tilde domain.
 With these new points for the vertical steps of $cal(Q)$, we can draw the new quantizer for the first metric in @fig:smhd_found_bound_graph.
 
 
@@ -236,7 +240,7 @@ Analytically, the offset we are applying to $cal(E)(2, 2, tilde(x))$ can be defi
 
 $ Phi = lr(frac(1, 2^M dot S dot 2)mid(|))_(M=2, S=2) = 1 / 16 space.en. $<eq:offset>
 
-$Phi$ is the constant that we will multiply with a certain metric index $i$ to obtain the metric offset $phi$, which is used to define each of the $S$ different quantizers for reconstruction.
+$Phi$ is the constant that we will multiply with a certain metric index $i in [- S/2, ..., S/2]$ to obtain the metric offset $phi$, which is used to define each of the $S$ different quantizers for reconstruction.
 //This is also shown in @fig:smhd_2_2_reconstruction, as our quantizer curve is moved $1/16$ to the left and the right.
 In @fig:smhd_2_2_reconstruction, the two metric indices $i = plus.minus 1$ will be multiplied with $Phi$, yielding two quantizers, one moved $1/16$ to the left and one moved $1/16$ to the right. 
 
@@ -245,7 +249,7 @@ If a odd number of metrics is given, the offset can still be calculated using @e
 
 
 To find all metric offsets for values of $S > 3$, we can use @alg:find_offsets.
-For application, we calculate $phi$ based on $S$ and $M$ using @eq:offset. The resulting list of offsets is correctly ordered and can be mapped to the corresponding metrics in ascending order.// as we will show in @fig:4_2_offsets and @fig:6_2_offsets.
+We can calculate $phi$ based on $S$ and $M$ using @eq:offset. The resulting list of offsets is correctly ordered and can be mapped to the corresponding metrics in ascending order.// as we will show in @fig:4_2_offsets and @fig:6_2_offsets.
 
 #figure(
   kind: "algorithm",
@@ -255,7 +259,7 @@ For application, we calculate $phi$ based on $S$ and $M$ using @eq:offset. The r
 
 ==== Offset properties<par:offset_props>
 //#inline-note[Diese section ist hier etwas fehl am Platz, ich weiß nur nicht genau wohin damit. Außerdem ist sie ein bisschen durcheinander geschrieben]
-Before we go on and experimentally test this realization of the S-Metric method, let's look deeper into the properties of the metric offset value $phi$.\
+Before we go on and experimentally test this realization of the S-Metric method, let's look deeper into the properties of the metric offset value $phi$.
 Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their respective values of @eq:offset, we can observe, that the offset $Phi$ gets smaller the more metrics we use.
 
 #figure(
@@ -270,7 +274,7 @@ Comparing @fig:smhd_2_2_reconstruction, @fig:smhd_3_2_reconstruction and their r
   caption: [Offset values for 2-bit configurations]
 )<tab:offsets>
 As previously stated, we will need to define $S$ quantizers, $S/2$ times to the left and $S/2$ times to the right. 
-For example, setting parameter $S$ to $4$ means we will need to move the enrollment quantizer $lr(S/2 mid(|))_(S=4) = 2$ times to the left and right. 
+For example, setting the parameter $S$ to $4$ means we will need to move the enrollment quantizer $2$ times to the left and right. 
 As we can see in @fig:4_2_offsets, $phi$ for the maximum metric indices $i = plus.minus 2$ are identical to the offsets of a 2-bit 2-metric configuration.
 In fact, this property carries on for higher even numbers of metrics, as shown in @fig:6_2_offsets. 
 
@@ -304,12 +308,12 @@ In fact, this property carries on for higher even numbers of metrics, as shown i
 
 At $s=6$ metrics, the biggest metric offset we encounter is $phi = 1/16$ at $i = plus.minus 3$.\
 This biggest (or maximum) offset is of particular interest to us, as it tells us how far we deviate from the original quantizer used during enrollment. 
-The maximum offset for a 2-bit configuration $phi$ is $1/16$ and we will introduce smaller offsets in between if we use a higher even number of metrics.
+The maximum offset for a 2-bit configuration $phi$ is $1/16$ and we only introduce smaller offsets in between if we use a higher even number of metrics.
 
 More formally, we can define the maximum metric offset for an even number of metrics as follows: 
 $ phi_("max,even") = frac(frac(S,2), 2^M dot S dot 2) = frac(1, 2^M dot 4) $<eq:max_offset_even>
 
-Here, we multiply @eq:offset by the maximum metric index $i_"max" = S/2$.
+Here, we multiply $phi$ from @eq:offset by the maximum metric index $i_"max" = S/2$.
 
 Now, if we want to find the maximum offset for a odd number of metrics, we need to modify @eq:max_offset_even, more specifically its numerator. 
 For that reason, we will decrease the parameter $m$ by $1$, that way we will still perform a division without remainder:
@@ -344,7 +348,7 @@ Because $phi_"max,odd"$ only approximates $phi_"max,even"$ if $S arrow.r infinit
 
 == Improvements<sect:smhd_improvements>
 
-The by @smhd proposed S-Metric Helper Data Method can be improved by using gray coded labels for the quantized symbols instead of naive ones.
+The S-Metric Helper Data Method proposed by Fischer in @smhd can be improved by using Gray-coded labels for the quantized symbols instead of naive labelling.
 #align(center)[
 #scale(x: 80%, y: 80%)[
 #figure(
@@ -352,7 +356,7 @@ The by @smhd proposed S-Metric Helper Data Method can be improved by using gray 
   caption: [Gray Coded 2-bit quantizer]
 )<fig:2-bit-gray>]]
 @fig:2-bit-gray shows a 2-bit quantizer with gray-coded labelling.
-In this example, we have an advantage at $tilde(x) = ~ 0.5$, because a quantization error only returns one wrong bit instead of two.
+In this example, we have an advantage at $tilde(x) approx 0.5$, because a quantization error only returns one wrong bit instead of two.
 
 Furthermore, the transformation into the Tilde-Domain could also be performed using the @ecdf to achieve a more precise uniform distribution because we do not have to estimate a standard deviation of the input values.
 
@@ -360,30 +364,30 @@ Furthermore, the transformation into the Tilde-Domain could also be performed us
 
 == Experiments<sect:smhd_experiments>
 
-We tested the implementation of @sect:smhd_implementation with the temperature dataset of @dataset.
+We tested the implementation of @sect:smhd_implementation with the dataset of @dataset.
 The dataset contains counts of positives edges of a toggle flip flop at a set evaluation time $D$. Based on the count and the evaluation time, the frequency of a ring oscillator can be calculated using: $f = 2 dot frac(k, D)$. 
-Because we want to analyze the performance of the S-Metric method over different temperatures, both during enrollment and reconstruction, we are limited to the second part of the experimental measurements of @dataset. 
+Because we want to analyze the performance of the S-Metric method over different temperatures, both during enrollment and reconstruction, we are limited to the experimental measurements of @dataset which varied the temperature during the FPGA operation. 
 We will have measurements of $50$ FPGA boards available with $1600$ and $1696$ ring oscillators each. To obtain the values to be processed, we subtract them in pairs, yielding $800$ and $848$ ring oscillator frequency differences _df_.\ 
-Since the frequencies _f_ are normal distributed, the difference _df_ can be assumed to be zero-mean Gaussian distributed.
-To apply the values _df_ to our implementation of the S-Metric method, we will first transform them into the Tilde-Domain using an inverse CDF, resulti/invite <mxid>ng in uniform distributed values $tilde(italic("df"))$.
+Because we can assume that the frequencies _f_ are i.i.d., the difference _df_ can also be assumed to be i.i.d.
+To apply the values _df_ to our implementation of the S-Metric method, we will first transform them into the Tilde-Domain using an inverse CDF, resulting in uniform distributed values $tilde(x)$.
 Our resulting dataset consists of #glspl("ber") for quantization symbol widths of up to $6 "bits"$ evaluated with generated helper-data from up to $100 "metrics"$.
-We chose not to perform simulations for bit widths higher than $6 "bits"$, as we will see later that we have already reached a bit error rate of approx. $10%$ for these configurations.
+//We chose not to perform simulations for bit widths higher than $6 "bits"$, as we will see later that we have already reached a bit error rate of approx. $10%$ for these configurations.
 
 === Results & Discussion
 
 The bit error rate of different S-Metric configurations for naive labelling can be seen in @fig:global_errorrates.
-For this analysis, enrollment and reconstruction were both performed at room temperature and the quantizer was naively labelled. 
+For this analysis, enrollment and reconstruction were both performed at room temperature. //and the quantizer was naively labelled. 
 
 #figure(
   image("../graphics/25_25_all_error_rates.svg", width: 95%),
-  caption: [Bit error rates for same temperature execution. Here we can already observe the asymptotic loss of improvement in #glspl("ber") for higher metric numbers]
+  caption: [Bit error rates for same-temperature execution. Here we can already observe the asymptotic #glspl("ber") for higher metric numbers. The error rate is scaled logarithmically here.]
 )<fig:global_errorrates>
 
 We can observe two key properties of the S-Metric method in @fig:global_errorrates.
-The error rate in this plot is scaled logarithmically.\
-The exponential growth of the error rate of classic 1-metric configurations can be observed through the linear increase of the error rates.
-Also, as we expanded on in @par:offset_props, using more metrics will, at some point, not further improve the bit error rate of the key.
-At a symbol width of $m >= 6$ bits, no further improvement through the S-Metric method can be observed.
+//The exponential growth of the error rate of classic 1-metric configurations can be observed through the increase of the error rates.
+The exponential growth of the @ber can be observed if we set $S=1$ and increase $M$ up to $6$.
+Also, as we expanded on in @par:offset_props, at some point using more metrics will no longer improve the bit error rate of the key.
+At a symbol width of $M >= 6$ bits, no further improvement through the S-Metric method can be observed.
 
 #figure(
   include("../graphics/plots/errorrates_changerate.typ"),
@@ -392,12 +396,12 @@ At a symbol width of $m >= 6$ bits, no further improvement through the S-Metric 
 
 This tendency can also be shown through @fig:errorrates_changerate. 
 Here, we calculated the quotient of the bit error rate using one metric and 100 metrics.
-From $m >= 6$ onwards, $(x_"1" (m)) / (x_"100" (m))$ approaches $~1$, which means, no real improvement is possible anymore through the S-Metric method.
+From $M >= 6$ onwards, $(op("BER")(1, 2^M)) / (op("BER")(100, 2^M))$ approaches $~1$, which means, no real improvement is possible anymore through the S-Metric method.
 
-==== Helper Data Volume Impact
+==== Helper data volume impact
 
-The amount of helper data bits required by @smhdt is defined as a function of the amount of metrics as $log_2(S)$.
-The overall extracted-bits to helper-data-bits ratio can be defined here as $cal(r) = lr(frac(n dot M, log_2(S))mid(|))_(n=800) = frac(800 dot M, log_2(S))$
+The amount of helper data bits required by @smhdt is defined as a function of the number of metrics as $log_2(S)$.
+The overall extracted-bits to helper-data-bits ratio can be defined here as $cal(r) = frac(M, log_2(S))$
 
 #figure(
     table(
@@ -405,7 +409,7 @@ The overall extracted-bits to helper-data-bits ratio can be defined here as $cal
       inset: 7pt,
       align: center + horizon,
       [$bold(M)$], [$1$], [$2$], [$3$], [$4$], [$5$], [$6$],
-      [*Errorrate*], [$0.012$], [$0.9 dot 10^(-4)$], [$0.002$], [$0.025$], [$0.857$], [$0.148$], 
+      [*@ber*], [$0.012$], [$0.9 dot 10^(-4)$], [$0.002$], [$0.025$], [$0.857$], [$0.148$], 
     ),
     caption: [S-Metric performance with same bit-to-metric ratios]
 )<fig:smhd_ratio_performance>
@@ -428,8 +432,7 @@ Since we wont always be able to recreate lab-like conditions during the reconstr
 )<fig:smhd_tmp_reconstruction>
 
 @fig:smhd_tmp_reconstruction shows the results of this experiment conducted with a 2-bit configuration.\
-As we can see, the further we move away from the temperature of enrollment, the higher the bit error rates turns out to be.\
-
+As we can see, the further we move away from the temperature of enrollment, the higher the #glspl("ber").
 We can observe this property well in detail in @fig:global_diffs.
 
 #scale(x: 90%, y: 90%)[
@@ -439,14 +442,13 @@ We can observe this property well in detail in @fig:global_diffs.
 )<fig:global_diffs>]
 
 Here, we compared the asymptotic performance of @smhdt for different temperatures both during enrollment and reconstruction. First we can observe that the optimum temperature for the operation of @smhdt in both phases for the dataset @dataset is $35°C$ instead of the expected $25°C$.
-Furthermore, the @ber seems to be almost directly correlated with the absolute temperature difference, especially at higher temperature differences, showing that the further apart the temperatures of the two phases are, the higher the @ber.
+Furthermore, the @ber seems to be almost directly determined by the absolute temperature difference, especially at higher temperature differences, showing that the further apart the temperatures of the two phases are, the higher the @ber.
 
 ==== Gray coding
 
 In @sect:smhd_improvements, we discussed how a gray coded labelling for the quantizer could improve the bit error rates of the S-Metric method.
 
 Because we only change the labelling of the quantizing bins and do not make any changes to #gls("smhdt") itself, we can assume that the effects of temperature on the quantization process are directly translated to the gray-coded case.
-Therefore, we will not perform this analysis again here.
 
 @fig:smhd_gray_coding shows the comparison of applying #gls("smhdt") at room temperature for both naive and gray-coded labels.
 There we can already observe the improvement of using gray-coded labelling, but the impact of this change of labels can really be seen in @tab:gray_coded_impact.
@@ -456,11 +458,11 @@ For $M>3$ the rise of the #gls("ber") predominates the possible improvement by a
 
 #figure(
   table(
-    columns: (7),
+    columns: (6),
     align: center + horizon, 
     inset: 7pt,
-    [*M*],[1],[2],[3],[4], [5], [6],
-    [*Improvement*], [$0%$], [$24.75%$], [$47.45%$], [$46.97%$], [$45.91%$], [$37.73%$]
+    [1],[2],[3],[4], [5], [6],
+    [$0%$], [$24.75%$], [$47.45%$], [$46.97%$], [$45.91%$], [$37.73%$]
   ),
   caption: [Improvement of using gray-coded instead of naive labelling, per bit width]
 )<tab:gray_coded_impact>
@@ -470,4 +472,4 @@ For $M>3$ the rise of the #gls("ber") predominates the possible improvement by a
   caption: [Comparison between #glspl("ber") using naive labelling and gray-coded labelling]
 )<fig:smhd_gray_coding>
 
-Using our dataset, we can estimate the average improvement for using gray-coded labelling to be at around $33%$.
+Using the dataset, we can estimate the average improvement for using gray-coded labelling to be at $33%$.

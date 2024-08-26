@@ -3,6 +3,8 @@
 #let line_style = (stroke: (paint: black, thickness: 2pt))
 #let dashed = (stroke: (dash: "dashed"))
 #canvas({
+  import draw: *
+  set-style(axes: (shared-zero: false))
   plot.plot(size: (8,6),
     x-tick-step: 0.25,
     y-label: $cal(E)(3, 2, tilde(x))$,

@@ -10,7 +10,12 @@
   supervisor: "",
   submitted: ""
 ) = {
-  page(
+  set text(
+    font: "TUM Neue Helvetica",
+    size: 10pt
+  )
+
+  set page(
     paper: "a4",
     margin: (
       top: 5cm,
@@ -24,44 +29,36 @@
         text(
           fill: tum_blue,
           size: 8pt,
-          font: "TUM Neue Helvetica",
           [#chair \ #school \ Technical University of Munich]
         ),
         align(bottom + right, image("resources/TUM_Logo_blau.svg", height: 30%))
       )
     ],
     footer: []
-  )[
-    #set text(
-      font: "TUM Neue Helvetica",
-      size: 10pt
-    )
+  )
 
-    #v(1cm)
+  v(1cm)
 
-    #set align(top + left)
-    #text(size: 24pt, [*#title*])
+  set align(top + left)
+  text(size: 24pt, [*#title*])
 
-    #v(3cm)
+  v(3cm)
 
-    #text(fill: tum_blue, size: 17pt, [*#author*])
+  text(fill: tum_blue, size: 17pt, [*#author*])
 
-    #v(3cm)
+  v(3cm)
 
-    Thesis for the attainment of the academic degree
-    #v(1em)
-    *#degree*
-    #v(1em)
-    at the #school of the Technical University of Munich.
+  [Thesis for the attainment of the academic degree]
+  v(1em)
+  [*#degree*]
+  v(1em)
+  [at the #school of the Technical University of Munich.]
 
-    #v(3cm)
+  v(3cm)
 
-    *Examiner:*\ #examiner
-    #v(0em)
-    *Supervisor:*\ #supervisor
-    #v(0em)
-    *Submitted:*\ Munich, #submitted
-  ]
-
-  pagebreak()
+  [*Examiner:*\ #examiner]
+  v(0em)
+  [*Supervisor:*\ #supervisor]
+  v(0em)
+  [*Submitted:*\ Munich, #submitted]
 }

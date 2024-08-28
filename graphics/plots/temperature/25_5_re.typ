@@ -26,8 +26,8 @@
   plot.plot(size: (10,5),
     x-tick-step: none,
     x-ticks: ((0.04, [2]),(2, [100])),
-    y-label: $"Bit error rate"$,
-    x-label: $s$,
+    y-label: $op("BER")(S, 2^2)$,
+    x-label: $S$,
     y-tick-step: 1,
     x-max: 2,
     //y-ticks : (

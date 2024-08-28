@@ -27,6 +27,8 @@
   plot.plot(
     y-label: "Bit error rate",
     x-label: "Enrollment, reconstruction temperature",
+    legend: "legend.north",
+    legend-style: (offset: (2.25, 0), stroke: none),
     x-tick-step: none,
     x-ticks: conf,
     y-format: formatter,
@@ -39,9 +41,11 @@
 
   plot.plot(
     y2-label: "Temperature difference",
+    legend: "legend.north",
+    legend-style: (offset: (-2.25, 0), stroke: none),
     y2-tick-step: 10,
     axis-style: "scientific-auto",
     size: (16,6),
-    plot.add(diff, axes: ("x1","y2")),
+    plot.add(diff, axes: ("x1","y2"), label: [Temperature difference]),
   )
 })

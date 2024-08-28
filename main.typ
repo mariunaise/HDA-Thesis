@@ -32,7 +32,7 @@
   degree: "Bachelor of Science (B.Sc.)",
   examiner: "Prof. Dr. Georg Sigl",
   supervisor: "M.Sc. Jonas Ruchti",
-  submitted: "22.07.2024",
+  submitted: "02.09.2024",
   doc
 )
 #set page(footer: locate(
@@ -45,10 +45,6 @@
 #include "content/introduction.typ"
 #include "content/SMHD.typ"
 #include "content/BACH.typ"
-//#include "content/state.typ"
-//#include "content/implementation.typ"
-//#include "content/benchmarks.typ"
-#include "content/conclusion.typ"
 #include "content/outlook.typ"
 
 #include "glossary.typ"

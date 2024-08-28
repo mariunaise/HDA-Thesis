@@ -310,7 +310,11 @@ At $s=6$ metrics, the biggest metric offset we encounter is $phi = 1/16$ at $i =
 This biggest (or maximum) offset is of particular interest to us, as it tells us how far we deviate from the original quantizer used during enrollment. 
 The maximum offset for a 2-bit configuration $phi$ is $1/16$ and we only introduce smaller offsets in between if we use a higher even number of metrics.
 
-More formally, we can define the maximum metric offset for an even number of metrics as follows: 
+More formally, we can define the maximum metric offset as follows: 
+
+$ phi_"max" = frac(floor(frac(S,2)), 2^M dot S dot 2) $
+
+/*More formally, we can define the maximum metric offset for an even number of metrics as follows: 
 $ phi_("max,even") = frac(frac(S,2), 2^M dot S dot 2) = frac(1, 2^M dot 4) $<eq:max_offset_even>
 
 Here, we multiply $phi$ from @eq:offset by the maximum metric index $i_"max" = S/2$.
@@ -322,8 +326,9 @@ $
 phi_"max,odd" &= frac(frac(S-1, 2), 2^n dot S dot 2)\
 &= lr(frac(S-1, 2^M dot S dot 4)mid(|))_(M=2, S=3) = 1/24
 $
-
-It is important to note, that $phi_"max,odd"$, unlike $phi_"max,even"$, is dependent on the parameter $S$ as we can see in @tb:odd_offsets.
+*/
+//It is important to note, that $phi_"max,odd"$, unlike $phi_"max,even"$, is dependent on the parameter $S$ as we can see in @tb:odd_offsets.
+It is important to note, that $phi_"max"$ is dependent on the parameter $S$ if $S$ is an odd number.
 
 #figure(
   table(
@@ -336,11 +341,11 @@ It is important to note, that $phi_"max,odd"$, unlike $phi_"max,even"$, is depen
   caption: [2-bit maximum offsets, odd]
 )<tb:odd_offsets>
 
-The higher $S$ is chosen, the closer we approximate $phi_"max,even"$ as shown in @eq:offset_limes. 
+The higher $S$ is chosen, the closer we approximate $phi_"max"$ for even choices of $S$, as shown in @eq:offset_limes. 
 This means, while also keeping the original quantizer during the reconstruction phase, the maximum offset for an odd number of metrics will always be smaller than for an even number.
 
 $
-lim_(S arrow.r infinity) phi_"max,odd" &= frac(S-1, 2^M dot S dot 4) #<eq:offset_limes>\
+lim_(S arrow.r infinity) phi_"max,odd" &= frac(floor(frac(S,2)), 2^M dot S dot 2) =  frac(S-1, 2^M dot S dot 4) #<eq:offset_limes>\
 &= frac(1, 2^M dot 4) = phi_"max,even" 
 $
 
@@ -365,21 +370,25 @@ Furthermore, the transformation into the Tilde-Domain could also be performed us
 == Experiments<sect:smhd_experiments>
 
 We tested the implementation of @sect:smhd_implementation with the dataset of @dataset.
-The dataset contains counts of positives edges of a toggle flip flop at a set evaluation time $D$. Based on the count and the evaluation time, the frequency of a ring oscillator can be calculated using: $f = 2 dot frac(k, D)$. 
+The dataset contains counts of positives edges of a ring oscillator at a set evaluation time $D$. Based on the count and the evaluation time, the frequency of a ring oscillator can be calculated using: $f = 2 dot frac(k, D)$. 
 Because we want to analyze the performance of the S-Metric method over different temperatures, both during enrollment and reconstruction, we are limited to the experimental measurements of @dataset which varied the temperature during the FPGA operation. 
-We will have measurements of $50$ FPGA boards available with $1600$ and $1696$ ring oscillators each. To obtain the values to be processed, we subtract them in pairs, yielding $800$ and $848$ ring oscillator frequency differences _df_.\ 
+We will have measurements of $50$ FPGA boards available with $1600$ and $1696$ ring oscillators each.
+The two measurement sets are obtained from different slices of the FPGA board where the only difference to note is the number of ring oscillators available.
+To obtain the values to be processed, we subtract them in pairs, yielding $800$ and $848$ ring oscillator frequency differences _df_.\ 
 Because we can assume that the frequencies _f_ are i.i.d., the difference _df_ can also be assumed to be i.i.d.
 To apply the values _df_ to our implementation of the S-Metric method, we will first transform them into the Tilde-Domain using an inverse CDF, resulting in uniform distributed values $tilde(x)$.
 Our resulting dataset consists of #glspl("ber") for quantization symbol widths of up to $6 "bits"$ evaluated with generated helper-data from up to $100 "metrics"$.
+In the following section, we will often set the maximum number of metrics to be $S=100$.
+This choice refers to the asymptotic behaviour of the @ber and can be equated with the choice $S arrow infinity$.
 //We chose not to perform simulations for bit widths higher than $6 "bits"$, as we will see later that we have already reached a bit error rate of approx. $10%$ for these configurations.
-
+#pagebreak()
 === Results & Discussion
 
 The bit error rate of different S-Metric configurations for naive labelling can be seen in @fig:global_errorrates.
 For this analysis, enrollment and reconstruction were both performed at room temperature. //and the quantizer was naively labelled. 
 
 #figure(
-  image("../graphics/25_25_all_error_rates.svg", width: 95%),
+  image("../graphics/25_25_all_error_rates_fixed.svg", width: 90%),
   caption: [Bit error rates for same-temperature execution. Here we can already observe the asymptotic #glspl("ber") for higher metric numbers. The error rate is scaled logarithmically here.]
 )<fig:global_errorrates>
 
@@ -398,7 +407,7 @@ This tendency can also be shown through @fig:errorrates_changerate.
 Here, we calculated the quotient of the bit error rate using one metric and 100 metrics.
 From $M >= 6$ onwards, $(op("BER")(1, 2^M)) / (op("BER")(100, 2^M))$ approaches $~1$, which means, no real improvement is possible anymore through the S-Metric method.
 
-==== Helper data volume impact
+==== Impact of helper data size
 
 The amount of helper data bits required by @smhdt is defined as a function of the number of metrics as $log_2(S)$.
 The overall extracted-bits to helper-data-bits ratio can be defined here as $cal(r) = frac(M, log_2(S))$
@@ -409,6 +418,7 @@ The overall extracted-bits to helper-data-bits ratio can be defined here as $cal
       inset: 7pt,
       align: center + horizon,
       [$bold(M)$], [$1$], [$2$], [$3$], [$4$], [$5$], [$6$],
+      [$bold(S)$], [$2$], [$4$], [$8$], [$16$], [$32$], [$64$],
       [*@ber*], [$0.012$], [$0.9 dot 10^(-4)$], [$0.002$], [$0.025$], [$0.857$], [$0.148$], 
     ),
     caption: [S-Metric performance with same bit-to-metric ratios]

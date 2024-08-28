@@ -10,7 +10,7 @@
     legend-style: (orientation: ltr, item: (spacing: 0.5)),
     x-tick-step: none,
     x-ticks: ((0, [0]), (100, [0])),
-    y-label: $cal(Q)(1, x), xi(x)$,
+    y-label: $cal(Q)(1, x)$,
     x-label: $x$,
     y-tick-step: none,
     y-ticks: ((0, [0]), (ymax, [1])),

@@ -13,17 +13,23 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +183 content/BACH.typ
+badd +353 content/BACH.typ
 badd +1 glossary.typ
 badd +1 bibliography.bib
 badd +1 \$
-badd +14 pseudocode/bach_1.typ
+badd +9 pseudocode/bach_1.typ
 badd +265 content/SMHD.typ
-badd +7 pseudocode/bach_find_best_appr.typ
-badd +60 content/introduction.typ
+badd +3 pseudocode/bach_find_best_appr.typ
+badd +65 content/introduction.typ
+badd +16 graphics/quantizers/bach/sign-based-overlay.typ
+badd +34 content/conclusion.typ
+badd +5 content/outlook.typ
 argglobal
 %argdel
 set stal=2
+tabnew +setlocal\ bufhidden=wipe
+tabnew +setlocal\ bufhidden=wipe
+tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
 tabnew +setlocal\ bufhidden=wipe
@@ -42,12 +48,51 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 88 - ((17 * winheight(0) + 25) / 50)
+let s:l = 309 - ((0 * winheight(0) + 28) / 57)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 88
-normal! 0102|
+keepjumps 309
+normal! 020|
+tabnext
+edit content/conclusion.typ
+argglobal
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let &fdl = &fdl
+let s:l = 19 - ((18 * winheight(0) + 28) / 57)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 19
+normal! 0
+tabnext
+edit content/outlook.typ
+argglobal
+balt content/conclusion.typ
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let &fdl = &fdl
+let s:l = 5 - ((4 * winheight(0) + 28) / 57)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 5
+normal! 097|
 tabnext
 edit content/introduction.typ
 argglobal
@@ -62,12 +107,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 56 - ((41 * winheight(0) + 25) / 50)
+let s:l = 74 - ((46 * winheight(0) + 28) / 57)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 56
-normal! 0
+keepjumps 74
+normal! 084|
 tabnext
 edit glossary.typ
 argglobal
@@ -126,8 +171,8 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe '1resize ' . ((&lines * 25 + 26) / 53)
-exe '2resize ' . ((&lines * 24 + 26) / 53)
+exe '1resize ' . ((&lines * 25 + 30) / 60)
+exe '2resize ' . ((&lines * 31 + 30) / 60)
 argglobal
 balt bibliography.bib
 setlocal fdm=manual
@@ -140,12 +185,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 12 - ((11 * winheight(0) + 12) / 25)
+let s:l = 14 - ((13 * winheight(0) + 12) / 25)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 12
-normal! 068|
+keepjumps 14
+normal! 010|
 wincmd w
 argglobal
 if bufexists(fnamemodify("pseudocode/bach_find_best_appr.typ", ":p")) | buffer pseudocode/bach_find_best_appr.typ | else | edit pseudocode/bach_find_best_appr.typ | endif
@@ -163,16 +208,36 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 7 - ((6 * winheight(0) + 12) / 24)
+let s:l = 4 - ((3 * winheight(0) + 15) / 31)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 7
-normal! 031|
+keepjumps 4
+normal! 014|
 wincmd w
-exe '1resize ' . ((&lines * 25 + 26) / 53)
-exe '2resize ' . ((&lines * 24 + 26) / 53)
-tabnext 5
+exe '1resize ' . ((&lines * 25 + 30) / 60)
+exe '2resize ' . ((&lines * 31 + 30) / 60)
+tabnext
+edit graphics/quantizers/bach/sign-based-overlay.typ
+argglobal
+balt pseudocode/bach_1.typ
+setlocal fdm=manual
+setlocal fde=0
+setlocal fmr={{{,}}}
+setlocal fdi=#
+setlocal fdl=0
+setlocal fml=1
+setlocal fdn=20
+setlocal fen
+silent! normal! zE
+let &fdl = &fdl
+let s:l = 16 - ((15 * winheight(0) + 25) / 50)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 16
+normal! 026|
+tabnext 2
 set stal=1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -180,8 +245,6 @@ endif
 unlet! s:wipebuf
 set winheight=1 winwidth=20
 let &shortmess = s:shortmess_save
-let &winminheight = s:save_winminheight
-let &winminwidth = s:save_winminwidth
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)

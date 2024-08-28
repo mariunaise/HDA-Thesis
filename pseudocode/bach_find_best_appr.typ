@@ -1,6 +1,6 @@
 #import "@preview/lovelace:0.3.0": *
 
-#pseudocode-list(booktabs: true, numbered-title: [Find best approximation])[
+#pseudocode-list(booktabs: true, numbered-title: [OptimalWeights to approximate $bold(cal(o))$])[
   + *inputs*:
     + $bold(y)$ input values for linear combinations
     + $bold(cal(o))$ list of optimal points

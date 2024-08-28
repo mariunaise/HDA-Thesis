@@ -3,7 +3,7 @@
 = Introduction
 
 In the field of cryptography, @puf devices are a popular tool for key generation and storage @PUFIntro @PUFIntro2.
-In general, a @puf describes a kind of circuit that issues due to minimal deviations in the manufacturing process slightly different behaviours during operation. 
+In general, a @puf refers to a type of circuit that exhibits slightly different behaviors during operation due to minor variations in the manufacturing process.
 Since the behaviour of one @puf device is now only reproducible on itself and not on a device of the same type with the same manufacturing process, it can be used for secure key generation and/or storage.\
 
 To improve the reliability of the keys generated and stored using the @puf, various #glspl("hda") have been introduced. 
@@ -60,6 +60,9 @@ $ cal(Q)(S,M) , $<eq-1>
 
 where $S$ determines the number of metrics and $M$ the bit width of the symbols.
 The corresponding metric is defined through the lower case $s$, the bit symbol through the lower case $m$.
+To compare both @smhdt and @bach, we will use a ratio $cal(r) = frac("Extracted bits", "Helper data bits")$.
+This ratio gives us an idea how many helper data bits were used to obtain a quantized symbol. 
+$cal(r)$ is smaller than $1$ if the amount of helper data bits per quantized symbol is bigger than the symbol bit width itself and bigger than $1$ otherwise.
 
 === Tilde Domain<tilde-domain>
 
@@ -68,7 +71,7 @@ As also described in @smhd, we will use a @cdf to transform the real PUF values 
 This transformation can be performed using the function $xi = tilde(x)$. The key property of this transformation is the resulting uniform distribution of $x$. 
 
 Considering a normal distribution, the CDF is defined as 
-$ xi(frac(x - mu, sigma)) = frac(1, 2)[1 + op("erf")(frac(x - mu, sigma sqrt(2)))] $
+$ xi(frac(x - mu, sigma)) = frac(1, 2)[1 + op("erf")(frac(x - mu, sigma sqrt(2)))]. $
 
 ==== #gls("ecdf", display: "Empirical cumulative distribution function (eCDF)")
 

@@ -11,7 +11,7 @@ The general operation of a @puf with a @hda can be divided into two separate sta
 
 #figure(
   include("../charts/PUF.typ"), 
-  caption: [@puf model description using enrollment and reconstruction.]
+  caption: [@puf model description using enrollment and reconstruction @PUFChartRef]
 )<fig:puf_operation>
 
 The enrollment stage will usually be performed in near ideal, lab-like conditions i.e. at room temperature ($25°C$).
@@ -31,8 +31,7 @@ To achieve that, helper data is generated to define multiple quantizers for the 
 A generalization outline to extend @tmhdt for higher order bit quantization has already been proposed by Fischer in @smhd.  
 
 In the course of this work, we will first take a closer look at @smhdt as proposed by Fischer @smhd and provide a concrete realization for this method.
-We will also propose a method to shape the input values of a @puf to better fit within the bounds of a multi-bit quantizer which we call @bach. 
-We will investigate the question which of these two #glspl("hda") provides the better performance for higher order bit cases with the least amount of helper data bits.
+We will also propose the idea of a method to shape the input values of a @puf to better fit within the bounds of a multi-bit quantizer which we call @bach and discuss how such a @hda can be successfully implemented in the future.
 
 == Notation
 

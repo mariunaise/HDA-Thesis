@@ -295,7 +295,7 @@ We can lower the computational complexity of this approach by using the assumpti
 The end result of $bold(cal(o))$ can be calculated once for a specific device series and saved in the ROM of. 
 During enrollment, only the vector $bold(h)_"opt"$ has to be calculated.
 
-=== Impact of helper-data volume and amount of addends
+=== Helper-data size and amount of addends
 
 The amount of helper data is directly linked to the symbol bit width $M$ and the amount of addends $N$ used in the linear combination.
 Because we can set the first helper data bit $h_1$ of a linear combination to $1$ to omit the random choice, the resulting extracted bit to helper data bit ratio $cal(r)$ can be defined as $cal(r) = frac(M, N-1)$, whose equation is similar tot he one we used in the @smhdt analysis.
@@ -391,10 +391,10 @@ We can also compare the performance of @bach using the center point approximatio
   caption: [#glspl("ber") for higher order bit quantization without helper data ]
 )<tab:no_hd>
 
-Unfortunately, the comparison of #glspl("ber") of @tab:no_hd[Tables] and @tab:BACH_performance[] shows that our current realization of @bach does either ties the @ber in @tab:no_hd or is worse.
+Unfortunately, the comparison of #glspl("ber") of @tab:no_hd[Tables] and @tab:BACH_performance[] shows that our current realization of @bach either ties the @ber in @tab:no_hd or is worse.
 Let's find out why this happens.
 
-==== Justification of the original idea
+==== Discussion
 
 If we take a step back and look at the performance of the optimized single-bit sign-based quantization process of @sect:1-bit-opt, we can compare the following #glspl("ber"):
 

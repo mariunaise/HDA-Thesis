@@ -10,7 +10,7 @@ Here we aimed to utilize the idea of moving our initial @puf measurement values 
 Although this method posed promising results for a sign-based quantization yielding an improvement of $approx 96%$ in our testing, finding a good approach to generalize this concept turned out to be difficult. 
 The first issue was the lack of an analytical description of the probability distribution resulting from the linear combinations. 
 We accounted for that by using an algorithm that alternates between defining the quantizing bounds using an @ecdf and optimizing the weights for the linear combinations based on the found bounds.
-The loose definition of @eq:optimization to find an ideal linear combination which maximizes the distance to its nearest quantization bound did not result in a stable probability distribution over various iterations.
+The initial loose definition to find ideal linear combinations which maximize the distance to their nearest quantization bounds did not result in a stable probability distribution over various iterations.
 Thus, we proposed a different approach to approximate the linear combination to the centers between the quantizing bounds. 
 This method resulted in a stable probability distribution, but did not provide any meaningful improvements to the @ber in comparison to not using any helper data at all. 
 

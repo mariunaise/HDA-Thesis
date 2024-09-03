@@ -32,7 +32,7 @@
   degree: "Bachelor of Science (B.Sc.)",
   examiner: "Prof. Dr. Georg Sigl",
   supervisor: "M.Sc. Jonas Ruchti",
-  submitted: "02.09.2024",
+  submitted: "30.08.2024",
   doc
 )
 #set page(footer: locate(

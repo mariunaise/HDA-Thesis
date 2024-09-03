@@ -50,8 +50,8 @@
         ];
       };
 
-      packages.mqt-qcec-diff-thesis = tx.buildTypstProject (typstProject // typstProjectSrc);
-      packages.default = self.packages.${system}.mqt-qcec-diff-thesis;
+      packages.HDA-thesis = tx.buildTypstProject (typstProject // typstProjectSrc);
+      packages.default = self.packages.${system}.HDA-thesis;
 
       apps.watch = flake-utils.lib.mkApp { drv = tx.watchTypstProject typstProject; };
       apps.default = self.apps.${system}.watch;

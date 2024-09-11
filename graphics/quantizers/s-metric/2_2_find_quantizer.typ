@@ -7,7 +7,7 @@
 #canvas({
   plot.plot(size: (8,6), name: "plot",
     x-tick-step: none,
-    x-ticks: ((3/16, [3/16]), (7/16, [7/16]), (11/16, [11/16]), (15/16, [15/16])),
+    x-ticks: ((1/4, [0.25]), (2/4, [0.5]), (3/4, [0.75]), (1, [1])),
     y-label: $cal(E)(2, 2, tilde(x))$,
     x-label: $tilde(x)$,
     y-tick-step: none,
@@ -19,7 +19,7 @@
     y-max: 1,{
     plot.add(((0,0), (0.125, 0.125), (0.25,0.25), (0.375, 0.375),(0.5,0.5), (0.625, 0.625),(0.75,0.75), (0.875, 0.875),(1, 1)), line: "vh", style: line_style)
     plot.add-hline(0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1, style: dashed)
-    plot.add-vline(3/16, 7/16, 11/16, 15/16, style: dashed2)
+    plot.add-vline(1/4, 2/4, 3/4, 4/4, style: dashed2)
     plot.add-anchor("q00", (1/16, 1/8))
     plot.add-anchor("h00", (1/16, 0))
     plot.add-anchor("q01", (5/16, 3/8))

@@ -1,10 +1,10 @@
 #import "@preview/cetz:0.2.2": canvas, plot
 
-#let line_style_aqua = (stroke: (paint: teal, thickness: 2pt))
-#let line_style_eastern = (stroke: (paint: maroon, thickness: 2pt))
+#let line_style_aqua = (stroke: (paint: red, thickness: 2pt))
+#let line_style_eastern = (stroke: (paint: blue, thickness: 2pt))
 #let dashed = (stroke: (dash: "dashed"))
-#let fill_aqua = (stroke: none, fill: aqua)
-#let fill_olive = (stroke: none, fill: eastern)
+#let fill_aqua = (stroke: none, fill: red)
+#let fill_olive = (stroke: none, fill: green)
 #canvas({
   plot.plot(size: (7,3),
     legend: "legend.south",

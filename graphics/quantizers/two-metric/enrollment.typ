@@ -2,8 +2,8 @@
 
 #let line_style = (stroke: (paint: black, thickness: 2pt))
 #let dashed = (stroke: (dash: "dashed"))
-#let fill_aqua = (stroke: none, fill: teal)
-#let fill_olive = (stroke: none, fill: maroon)
+#let fill_aqua = (stroke: none, fill: red)
+#let fill_olive = (stroke: none, fill: blue)
 #canvas({
   plot.plot(size: (7,3),
     legend: "legend.south",
